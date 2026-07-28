@@ -84,6 +84,7 @@ response2: Response = client.send(
     messages=history
 )
 
+
 if isinstance(response2, ToolCallResponse):
     # execute tool call
 

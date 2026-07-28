@@ -1,11 +1,11 @@
-from abc import ABC, abstractmethod, abstractclassmethod
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pydantic import BaseModel
 from enum import Enum
 import json
 from typing import Optional
 
-from .utils import get_file_extension
+# from . import utils
 
 
 ''''
@@ -119,11 +119,11 @@ class FileInput:
         return "input_file"
     
 
-    @property
-    def filetype(self):
-        '''Returns the file extension to identify the real file type'''
-        ext = get_file_extension(self.path)
-        return f"{ext}_input"
+    # @property
+    # def filetype(self):
+    #     '''Returns the file extension to identify the real file type'''
+    #     ext = utils.get_file_extension(self.path)
+    #     return f"{ext}_input"
 
 class Roles(Enum):
     user = "user"
@@ -187,8 +187,12 @@ class GenerationParams:
 
 class OpenAIResponse(Response):
     def __init__(self, raw_payload):
-        super.__init__(raw_payload)
-        self._payload_object = json.loads(self.raw_payload) # turns the raw payload from the provider API to a python dict object to avoid json <--> python type conflicts.
+        super().__init__(raw_payload)
+        self._payload_object = raw_payload # turns the raw payload from the provider API to a python dict object to avoid json <--> python type conflicts.
+
+    @property
+    def type(self):
+        return self.raw_payload.output[0].content[0].type
 
     @property
     def output_text(self):
@@ -468,7 +472,7 @@ class Tessaract:
     
 
 
-class Provider():
+class Provider(BaseModel):
     api_key: Optional[str] = None
     base_url: Optional[str] = None
     timeout: Optional[int] = None
@@ -477,6 +481,9 @@ class Provider():
     default_query: Optional[int] = None
 
 class OpenAIProvider(Provider):
+    pass
+
+class AnthropicProvider(Provider):
     pass
 
 

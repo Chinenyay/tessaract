@@ -5,15 +5,15 @@ from canonical_types.canonical_types import OpenAIProvider, GatewayError, OpenAI
 class OpenAIAdapter:
     def __init__(self):
         self._client_args = OpenAIProvider()
-        self._client = OpenAI(*self._client_args)
+        self._client = OpenAI(*self._client_args.model_dump(exclude_unset=True, exclude_none=True))
 
-    def generate_sync(self, model, input, instructions: Optional[str]):
+    def generate_sync(self, model, input, instructions: Optional[str] = None):
 
         try:
             response = self._client.responses.create(
                 model=model,
                 input=input,
-                instructions=instructions
+                instructions=None
             )
 
             tessaract_response = OpenAIResponse(response)
