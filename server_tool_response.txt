@@ -1,0 +1,145 @@
+{
+  "id": "resp_00c3ded8c294a37e006a61de73121c81a3ab23458a83964689",
+  "created_at": 1784798835.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "gpt-5.4-2026-03-05",
+  "object": "response",
+  "output": [
+    {
+      "id": "ws_00c3ded8c294a37e006a61de7403e081a3b827939e005dd9f9",
+      "action": {
+        "type": "search",
+        "queries": [
+          "positive news today July 23 2026 good news story",
+          "site:apnews.com uplifting positive news July 23 2026",
+          "site:reuters.com positive uplifting news July 23 2026"
+        ],
+        "query": "positive news today July 23 2026 good news story",
+        "sources": null
+      },
+      "status": "completed",
+      "type": "web_search_call"
+    },
+    {
+      "id": "msg_00c3ded8c294a37e006a61de77518081a386fd2db5296b55d4",
+      "content": [
+        {
+          "annotations": [
+            {
+              "end_index": 516,
+              "start_index": 441,
+              "title": "The Good News Network: Positive Stories 24/7",
+              "type": "url_citation",
+              "url": "https://www.goodnewsnetwork.org/?utm_source=openai"
+            },
+            {
+              "end_index": 916,
+              "start_index": 806,
+              "title": "What went right this week: the good news that matters - Positive News",
+              "type": "url_citation",
+              "url": "https://www.positive.news/society/good-news-stories-from-week-29-of-2026/?utm_source=openai"
+            }
+          ],
+          "text": "Sure \u2014 one positive story from **today, Thursday, July 23, 2026**, is that several outlets are highlighting fresh rounds of **uplifting \u201cgood news\u201d coverage** focused on real-world progress rather than crisis headlines. For example, Good News Network and DailyGood both published new positive-news updates dated **July 22, 2026** and surfaced today, featuring stories centered on community support, health progress, and practical solutions. ([goodnewsnetwork.org](https://www.goodnewsnetwork.org/?utm_source=openai))\n\nIf you want one concrete example with a hopeful theme, Positive News\u2019 latest weekly roundup points to encouraging public-health momentum, including progress toward the global **95\u201395\u201395 HIV treatment targets**, which is the kind of measurable improvement that can genuinely change lives. ([positive.news](https://www.positive.news/society/good-news-stories-from-week-29-of-2026/?utm_source=openai))\n\nIf you'd like, I can also give you:\n- a **science** good-news story,\n- an **environment** good-news story, or\n- a **human kindness** good-news story from today.",
+          "type": "output_text",
+          "logprobs": []
+        }
+      ],
+      "role": "assistant",
+      "status": "completed",
+      "type": "message",
+      "phase": "final_answer"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [
+    {
+      "type": "web_search",
+      "filters": null,
+      "search_context_size": "medium",
+      "user_location": {
+        "city": null,
+        "country": "US",
+        "region": null,
+        "timezone": null,
+        "type": "approximate"
+      },
+      "return_token_budget": "default",
+      "search_content_types": [
+        "text"
+      ]
+    }
+  ],
+  "top_p": 0.98,
+  "background": false,
+  "completed_at": 1784798840.0,
+  "conversation": null,
+  "max_output_tokens": null,
+  "max_tool_calls": null,
+  "moderation": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "prompt_cache_key": null,
+  "prompt_cache_options": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "current_turn",
+    "effort": "none",
+    "generate_summary": null,
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "top_logprobs": 0,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 8777,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 309,
+    "output_tokens_details": {
+      "reasoning_tokens": 84
+    },
+    "total_tokens": 9086
+  },
+  "user": null,
+  "billing": {
+    "payer": "openai"
+  },
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "store": true,
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 1
+    }
+  }
+}

@@ -54,7 +54,7 @@ class Gateway():
     def __init__(self, model_name: str, provider: str):
         pass 
 
-    def send(self, messages: list[Message], temperature: float = 1) -> Response:
+    def send(self, provider: str, messages: list[Message], temperature: float = 1) -> Response:
 
         return Response()
         
@@ -67,6 +67,7 @@ history = [
 ]
 
 response1: Response = client.send(
+    provider="xyz",
     messages=history
 )
 
@@ -79,6 +80,7 @@ history.append(response1)
 history.append(UserMessage("Visit wikikpedia"))
 
 response2: Response = client.send(
+    provider="xyz"
     messages=history
 )
 

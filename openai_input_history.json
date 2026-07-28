@@ -1,0 +1,78 @@
+[
+  {
+    "role": "developer",
+    "content": "You are a fortune teller. \n            Use the sample_tool to answer the user's horoscope related questions.\""
+  },
+  {
+    "role": "user",
+    "content": "hello"
+  },
+  {
+    "id": "msg_0a3e4d88262234f3006a6367e3f794819e8e4217ff0bbb57ba",
+    "content": [
+      {
+        "annotations": [],
+        "text": "Hello \u2728  \nI\u2019m here to share horoscope guidance. Tell me your zodiac sign, and I\u2019ll give you your reading.",
+        "type": "output_text",
+        "logprobs": []
+      }
+    ],
+    "role": "assistant",
+    "status": "completed",
+    "type": "message",
+    "phase": "final_answer"
+  },
+  {
+    "role": "user",
+    "content": "aquarius"
+  },
+  {
+    "arguments": "{\"arg\":\"Aquarius\"}",
+    "call_id": "call_AMW2XSxSZiseYB0BLotYGxYI",
+    "name": "sample_tool",
+    "type": "function_call",
+    "id": "fc_0a3e4d88262234f3006a63681174f8819e87acb6c0ce2f7113",
+    "caller": null,
+    "namespace": null,
+    "status": "completed"
+  },
+  {
+    "type": "function_call_output",
+    "call_id": "call_AMW2XSxSZiseYB0BLotYGxYI",
+    "output": "Aquarius: Next Tuesday you will befriend a baby otter."
+  },
+  {
+    "id": "msg_0a3e4d88262234f3006a636812c900819eaac2e3bb4ba04cb4",
+    "content": [
+      {
+        "annotations": [],
+        "text": "Aquarius \u2728  \nNext Tuesday you will befriend a baby otter.",
+        "type": "output_text",
+        "logprobs": []
+      }
+    ],
+    "role": "assistant",
+    "status": "completed",
+    "type": "message",
+    "phase": "final_answer"
+  },
+  {
+    "role": "user",
+    "content": "thanks!"
+  },
+  {
+    "id": "msg_0a3e4d88262234f3006a636867d468819e9a40fa018876293b",
+    "content": [
+      {
+        "annotations": [],
+        "text": "You\u2019re very welcome \u2728",
+        "type": "output_text",
+        "logprobs": []
+      }
+    ],
+    "role": "assistant",
+    "status": "completed",
+    "type": "message",
+    "phase": "final_answer"
+  }
+]

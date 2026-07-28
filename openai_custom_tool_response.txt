@@ -1,0 +1,116 @@
+{
+  "id": "resp_0d0613063fd9d6c7006a61ef584c3c81a3a863e63f5cd29727",
+  "created_at": 1784803160.0,
+  "error": null,
+  "incomplete_details": null,
+  "instructions": null,
+  "metadata": {},
+  "model": "gpt-5.4-2026-03-05",
+  "object": "response",
+  "output": [
+    {
+      "arguments": "{\"arg\":\"Aquarius\"}",
+      "call_id": "call_PMBKNFv1XdkmlWtMs5zgTfu4",
+      "name": "sample_tool",
+      "type": "function_call",
+      "id": "fc_0d0613063fd9d6c7006a61ef5944d881a3b02803d1bbc5a72b",
+      "caller": null,
+      "namespace": null,
+      "status": "completed"
+    }
+  ],
+  "parallel_tool_calls": true,
+  "temperature": 1.0,
+  "tool_choice": "auto",
+  "tools": [
+    {
+      "name": "sample_tool",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "arg": {
+            "type": "string",
+            "description": "An astrological sign like Taurus or Aquarius"
+          }
+        },
+        "required": [
+          "arg"
+        ],
+        "additionalProperties": false
+      },
+      "strict": true,
+      "type": "function",
+      "allowed_callers": null,
+      "defer_loading": null,
+      "description": "Get today's horoscope for an astrological sign.",
+      "output_schema": null
+    }
+  ],
+  "top_p": 0.98,
+  "background": false,
+  "completed_at": 1784803161.0,
+  "conversation": null,
+  "max_output_tokens": null,
+  "max_tool_calls": null,
+  "moderation": null,
+  "previous_response_id": null,
+  "prompt": null,
+  "prompt_cache_key": null,
+  "prompt_cache_options": null,
+  "prompt_cache_retention": "24h",
+  "reasoning": {
+    "context": "current_turn",
+    "effort": "none",
+    "generate_summary": null,
+    "mode": "standard",
+    "summary": null
+  },
+  "safety_identifier": null,
+  "service_tier": "default",
+  "status": "completed",
+  "text": {
+    "format": {
+      "type": "text"
+    },
+    "verbosity": "medium"
+  },
+  "top_logprobs": 0,
+  "truncation": "disabled",
+  "usage": {
+    "input_tokens": 66,
+    "input_tokens_details": {
+      "cache_write_tokens": 0,
+      "cached_tokens": 0
+    },
+    "output_tokens": 19,
+    "output_tokens_details": {
+      "reasoning_tokens": 0
+    },
+    "total_tokens": 85
+  },
+  "user": null,
+  "billing": {
+    "payer": "openai"
+  },
+  "frequency_penalty": 0.0,
+  "presence_penalty": 0.0,
+  "store": true,
+  "tool_usage": {
+    "image_gen": {
+      "input_tokens": 0,
+      "input_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "output_tokens": 0,
+      "output_tokens_details": {
+        "image_tokens": 0,
+        "text_tokens": 0
+      },
+      "total_tokens": 0
+    },
+    "web_search": {
+      "num_requests": 0
+    }
+  }
+}
