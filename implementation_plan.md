@@ -114,3 +114,70 @@ Health scoring
 Budget limits
 
 A circuit breaker temporarily stops sending requests to a repeatedly failing provider, allowing it time to recover.
+
+
+CODE ARCHITECTURE
+
+gateway/
+  canonical/
+    messages.py
+    tools.py
+    responses.py
+    streaming.py
+    usage.py
+
+  providers/
+    base.py
+    openai/
+      adapter.py
+      request_mapper.py
+      response_mapper.py
+      stream_mapper.py
+      errors.py
+    anthropic/
+    google/
+
+  routing/
+    registry.py
+    policies.py
+    fallbacks.py
+
+  reliability/
+    retry.py
+    timeout.py
+    circuit_breaker.py
+
+  pricing/
+    catalog.py
+    calculator.py
+
+  observability/
+    hooks.py
+    logging.py
+    tracing.py
+
+  validation/
+    capabilities.py
+    schemas.py
+    requests.py
+
+PROJECT ARCHITECTURE
+┌─────────────────────────────────────────────────┐
+│ Public clients                                 │
+│ Python library / HTTP server / command line     │
+├─────────────────────────────────────────────────┤
+│ Application services                           │
+│ Generation, routing, fallback, retries          │
+├─────────────────────────────────────────────────┤
+│ Canonical domain model                         │
+│ Requests, messages, content, tools, responses   │
+├─────────────────────────────────────────────────┤
+│ Provider ports                                 │
+│ Provider interface contracts                    │
+├─────────────────────────────────────────────────┤
+│ Provider adapters                              │
+│ OpenAI / Anthropic / Gemini                     │
+├─────────────────────────────────────────────────┤
+│ Infrastructure                                 │
+│ HTTP transport, telemetry, cache, credentials   │
+└─────────────────────────────────────────────────┘

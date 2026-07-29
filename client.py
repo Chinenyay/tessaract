@@ -1,6 +1,6 @@
-from canonical_types.canonical_types import OpenAIProvider, AnthropicProvider
+from rough.canonical_types import OpenAIProvider, AnthropicProvider
 from adapters import openai_adapter
-from canonical_types.canonical_types import Response
+from rough.canonical_types import Response
 
 
 SUPPORTED_PROVIDERS = OpenAIProvider | AnthropicProvider

@@ -1,1 +1,1 @@
-from canonical_types.canonical_types import JProvider, Tessaract
+from rough.canonical_types import JProvider, Tessaract

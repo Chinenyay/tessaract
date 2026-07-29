@@ -18,4 +18,5 @@ response = client.send(
     messages=[{"role": "user", "content": "How are you?"}]
 )
 
-print(response.type)
+
+

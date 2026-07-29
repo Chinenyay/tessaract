@@ -1,6 +1,6 @@
 from typing import Optional
 from openai import OpenAI
-from canonical_types.canonical_types import OpenAIProvider, GatewayError, OpenAIResponse
+from rough.canonical_types import OpenAIProvider, GatewayError, OpenAIResponse
 
 class OpenAIAdapter:
     def __init__(self):
