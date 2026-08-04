@@ -123,8 +123,9 @@ gateway/
     messages.py
     tools.py
     responses.py
-    streaming.py
-    usage.py
+    streaming.py *
+    usage.py *
+    model_capabilities
 
   providers/
     base.py
@@ -136,11 +137,6 @@ gateway/
       errors.py
     anthropic/
     google/
-
-  routing/
-    registry.py
-    policies.py
-    fallbacks.py
 
   reliability/
     retry.py

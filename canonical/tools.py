@@ -17,7 +17,20 @@ class ToolResult(ContentPart):
     pass
 
 '''
-# OPENAI TOOL SHAPE
+FunctionTool: DEVELOPER defines and executes
+HostedTool: PROVIDER defines and executes
+MCPTool: MCP server defines and executes
+ActionTool: PROVIDER defines and developer executes
+'''
+ToolDefinition = (
+    FunctionTool |
+    "HostedTool" |
+    "MCPServer" |
+    "ActionTool"
+)
+
+'''
+# OPENAI CUSTOM TOOL SHAPE
 tools = [
     {
         "type": "function",
@@ -36,6 +49,7 @@ tools = [
     },
 ]
 
+ANTHROPIC CUSTOM TOOL SHAPE
 tools = [
     {
         "name": "get_stock_price",
@@ -52,5 +66,10 @@ tools = [
         }
     }
 ]
+
+OPENAI SERVER-SIDE TOOLS
+
+
+ANTHROPIC SERVER-SIDE TOOLS
 
 '''

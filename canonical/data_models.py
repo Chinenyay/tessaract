@@ -1,13 +1,12 @@
-from typing import Optional
 from pydantic import BaseModel
 
 class Provider(BaseModel):
-    api_key: Optional[str] = None
-    base_url: Optional[str] = None
-    timeout: Optional[int] = None
-    max_retries: Optional[int] = None
-    default_headers: Optional[int] = None
-    default_query: Optional[int] = None
+    api_key: str | None = None
+    base_url: str | None = None
+    timeout: int | None = None
+    max_retries: int | None = None
+    default_headers: str | None = None
+    default_query: int | None = None
 
 class OpenAIProvider(Provider):
     pass
