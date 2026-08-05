@@ -76,10 +76,48 @@ class ToolCallStartedEvent(BaseModel):
         repr=False,
     )
 
+class ResponseError(BaseModel):
+    message: str
+    code: str | None = None
+
+class ResponseFailedEvent(BaseModel):
+    type: Literal["response.failed"] = "response.failed"
+    message: str
+    error: ResponseError
+    response: Response | None = None
+
+
+    raw_event: Any | None = Field(
+        default=None,
+        exclude=True,
+        repr=False
+    )
+
+
 
 '''
 =========Tessaract Canonical Streaming Types=============
-
+ResponseFailedEvent -> ant: error, oai: error or response.failed
+    oai: error
+    event: "error"
+    properties
+        type: Literal["error"]
+        code: str
+        message: str
+        param: null
+        sequence_number: int
+    
+    oai: response.failed
+    event: "response.failed"
+    properties
+        type: Literal["response.failed"]
+        response: object
+    
+    ant: error
+    event: "error"
+    properties:
+        type: Literal["error"]
+        error: object
 DONE ToolCallStartedEvent -> ant: content_block_start, content_block_type: tool_use, oai: response.output_item.added, output_item.type: fuction_call
     oai
     object: response.output_item.added
