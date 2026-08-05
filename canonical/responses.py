@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+
+
 class Response:
     def __init__(self, raw_payload):
         self.raw_payload = raw_payload
@@ -186,39 +188,15 @@ class OpenAIResponse(Response):
     
     @property
     def provider_metadata(self):
-        # p = self._payload_object
-        # time_created = p["created_at"]
-        # time_completed = p["completed_at"]
-
-        # metadata = p["metadata"]
-        # service_tier = p["service_tier"]
-        # billing_payer = p["billing"]["payer"]
-        # user = p["user"]
-
-        # return OpenAIMetadata(
-        #     time_created=time_created,
-        #     time_completed=time_completed,
-        #     metadata=metadata,
-        #     service_tier=service_tier,
-        #     billing_payer=billing_payer,
-        #     user=user
-        # )
+        pass
     
     @property
     def safety_moderation_metadata(self):
-        # p = self._payload_object        
-        # moderation = p["moderation"]
-        # safety_identifier = p["safety_identifier"]
-
-        # return (
-        #     moderation,
-        #     safety_identifier
-        # )
+        pass
 
     @property
     def tessaract_telemetry_data(self):
         ''''Will collect metrics like time to first token, etc'''
-        pass
 
 
 class AnthropicResponse(Response):
