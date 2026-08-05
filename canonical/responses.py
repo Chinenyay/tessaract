@@ -1,8 +1,8 @@
-from typing import Any, Literal
+from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .messages import Message
+from .output_types import OutputItem, TextOutputItem
 from .stream import ResponseError
 
 Provider = Literal["anthropic", "openai"]
@@ -17,24 +17,6 @@ ResponseStatus = Literal[
 ]
 
 
-class TextOutputItem(BaseModel):
-    pass
-
-class ReasoningOutputItem(BaseModel):
-    pass
-
-class ToolCallOutputItem(BaseModel):
-    pass
-
-class ProviderOutputItem(BaseModel):
-    pass
-
-OutputItem = (
-    TextOutputItem,
-    ReasoningOutputItem,
-    ToolCallOutputItem,
-    ProviderOutputItem
-)
 
 class Response(BaseModel):
     model_config = ConfigDict(
