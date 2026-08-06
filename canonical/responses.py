@@ -8,14 +8,13 @@ from .output_types import OutputItem, TextOutputItem, Usage
 
 Provider = Literal["anthropic", "openai"]
 
-ResponseStatus = Literal[
-    "queued",
-    "in_progress",
-    "completed",
-    "incomplete",
-    "failed",
-    "cancelled"
-]
+class ResponseStatus(str, Enum):
+    QUEUED = "queued"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    INCOMPLETE = "incomplete"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
 
 class FinishReason(str, Enum):
     COMPLETED = "completed"
