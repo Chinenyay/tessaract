@@ -57,8 +57,6 @@ class ProviderOutputItem(BaseModel):
 
 type OutputItem = (TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem)
 
-
-
 class IncompleteDetails(BaseModel):
     reason: str
 

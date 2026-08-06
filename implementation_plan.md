@@ -121,10 +121,11 @@ CODE ARCHITECTURE
 gateway/
   canonical/
     messages.py
+    input_types
+    output_types
     tools.py
     responses.py
     streaming.py *
-    usage.py *
     model_capabilities
 
   providers/

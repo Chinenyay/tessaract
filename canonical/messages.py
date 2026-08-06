@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from collections.abc import Iterable
 from enum import Enum
-from .content import ContentPart
+from .input_types import ContentPart
 
 class Role(Enum):
     user="user"

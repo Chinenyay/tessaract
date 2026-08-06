@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Any, TypeAlias, Mapping
-from .content import ContentPart
+from .input_types import ContentPart
 
 @dataclass(frozen=True)
 class ToolCallPart(ContentPart):

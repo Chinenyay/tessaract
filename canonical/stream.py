@@ -2,7 +2,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from .responses import Response
+from .responses import Response, ResponseError
 
 
 class TextDeltaEvent(BaseModel):
@@ -76,9 +76,7 @@ class ToolCallStartedEvent(BaseModel):
         repr=False,
     )
 
-class ResponseError(BaseModel):
-    message: str
-    code: str | None = None
+
 
 class ResponseFailedEvent(BaseModel):
     type: Literal["response.failed"] = "response.failed"
