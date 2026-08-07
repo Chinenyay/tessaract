@@ -105,3 +105,31 @@ class Response(BaseModel):
     @property
     def response_id(self) -> str:
         return self.id
+
+class OpenAIResponse(Response):
+    provider: Literal["openai"] = "openai"
+
+    @property
+    def previous_response_id(self) -> str | None:
+        raw = self.raw_response
+        if raw is None:
+            return None
+        return raw.previous_response_id
+
+    @property
+    def conversation_id(self) -> str | None:
+        raw = self.raw_response
+        if raw is None or raw.conversation is None:
+            return None
+        return raw.conversation.id
+
+    @property
+    def service_tier(self):
+        raw = self.raw_response
+        if raw is None:
+            return None
+        return raw.service_tier
+
+
+class AnthropicResponse(Response):
+    pass
