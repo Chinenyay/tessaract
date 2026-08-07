@@ -130,6 +130,20 @@ class OpenAIResponse(Response):
             return None
         return raw.service_tier
 
-
 class AnthropicResponse(Response):
-    pass
+    provider: Literal["anthropic"] = "anthropic"
+
+    @property
+    def container(self) -> object | None:
+        raw = self.raw_response
+        if raw is None:
+            return None
+        return raw.container
+
+    @property
+    def inference_geo(self) -> str | None:
+        raw = self.raw_response
+        if raw is None:
+            return None
+        return raw.usage.inference_geo
+    
