@@ -146,3 +146,4 @@ class AnthropicResponse(Response):
         if raw is None:
             return None
         return raw.usage.inference_geo
+

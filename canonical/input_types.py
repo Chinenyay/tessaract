@@ -37,6 +37,13 @@ class FilePart(ContentPart):
 class AudioPart(ContentPart):
     source: MediaSource
 
+@dataclass(frozen=True)
+class ToolCallPart(ContentPart):
+    pass
+
+class ToolResult(ContentPart):
+    pass 
+
 '''
 Desired shape
 Message(
