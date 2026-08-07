@@ -1,4 +1,14 @@
-from .anthropic.anthropic import AnthropicBashTool
-from .openai.shell import OpenAIHostedShellTool, OpenAILocalShellTool
+from base import ProviderTool
 
-type ShellTool = AnthropicBashTool | OpenAILocalShellTool | OpenAIHostedShellTool
+
+class ProviderExecutedTool(ProviderTool):
+    pass
+
+class ClientExecutedProviderTool(ProviderTool):
+    pass
+
+class ClientExecutedShellTool(ClientExecutedProviderTool):
+    pass
+
+class ProviderExecutedShellTool(ProviderExecutedTool):
+    pass
