@@ -1,12 +1,15 @@
+from collections.abc import Mapping
 from dataclasses import dataclass
-from typing import Any, TypeAlias, Mapping
+from typing import Any, Literal
+
 from .input_types import ContentPart
+
 
 @dataclass(frozen=True)
 class ToolCallPart(ContentPart):
     pass
 
-JSONSchema: TypeAlias = Mapping[str, Any]
+type JSONSchema = Mapping[str, Any]
 
 class FunctionTool(ContentPart):
     name: str
@@ -16,60 +19,31 @@ class FunctionTool(ContentPart):
 class ToolResult(ContentPart):
     pass
 
-'''
-FunctionTool: DEVELOPER defines and executes
-HostedTool: PROVIDER defines and executes
-MCPTool: MCP server defines and executes
-ActionTool: PROVIDER defines and developer executes
-'''
-ToolDefinition = (
-    FunctionTool |
-    "HostedTool" |
-    "MCPServer" |
-    "ActionTool"
-)
-
-'''
-# OPENAI CUSTOM TOOL SHAPE
-tools = [
-    {
-        "type": "function",
-        "name": "get_horoscope",
-        "description": "Get today's horoscope for an astrological sign.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "sign": {
-                    "type": "string",
-                    "description": "An astrological sign like Taurus or Aquarius",
-                },
-            },
-            "required": ["sign"],
-        },
-    },
-]
-
-ANTHROPIC CUSTOM TOOL SHAPE
-tools = [
-    {
-        "name": "get_stock_price",
-        "description": "Retrieves the current stock price for a given ticker symbol. The ticker symbol must be a valid symbol for a publicly traded company on a major US stock exchange like NYSE or NASDAQ. The tool will return the latest trade price in USD. It should be used when the user asks about the current or most recent price of a specific stock. It will not provide any other information about the stock or company.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-            "ticker": {
-                "type": "string",
-                "description": "The stock ticker symbol, e.g. AAPL for Apple Inc."
-            }
-            },
-            "required": ["ticker"]
-        }
-    }
-]
-
-OPENAI SERVER-SIDE TOOLS
 
 
-ANTHROPIC SERVER-SIDE TOOLS
+class ProviderTool:
+    pass
 
-'''
+class ProviderExecutedTool(ProviderTool):
+    pass
+
+class ClientExecutedProviderTool(ProviderTool):
+    pass
+
+
+class ClientExecutedShellTool(ClientExecutedProviderTool):
+    pass
+    
+class OpenAIHostedShellTool(ClientExecutedShellTool):
+    provider: Literal["openai"] = "openai"
+    type: Literal["shell"] = "shell"
+    environment: Literal["local"]
+
+
+class AnthropicHostedShellTool(ClientExecutedShellTool):
+    provider: Literal["anthropic"] = "anthropic"
+    type: Literal["bash_20250124"] = "bash_20250124"
+    name: Literal["bash"]
+
+ShellTool = ClientExecutedShellTool | "ProviderExecutedShellTool"
+

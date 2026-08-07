@@ -1,6 +1,6 @@
-from enum import Enum
-from typing import Any, Literal, TypeAlias
 from datetime import datetime
+from enum import Enum
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -146,4 +146,3 @@ class AnthropicResponse(Response):
         if raw is None:
             return None
         return raw.usage.inference_geo
-    
