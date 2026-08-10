@@ -1,7 +1,10 @@
+from pydantic import BaseModel
+
+
 class ClientTool:
     pass
 
-class ProviderTool:
+class ProviderTool(BaseModel):
     pass
 
 class ProviderExecutedTool(ProviderTool):
