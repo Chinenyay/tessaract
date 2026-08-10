@@ -1,7 +1,7 @@
 from collections.abc import Mapping
 from typing import Any
 
-from input_types import ContentPart
+from canonical.input_types import ContentPart
 
 from .base import ClientTool
 

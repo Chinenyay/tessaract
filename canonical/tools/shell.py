@@ -1,11 +1,5 @@
-from base import ProviderTool
+from .base import ClientExecutedProviderTool, ProviderExecutedTool
 
-
-class ProviderExecutedTool(ProviderTool):
-    pass
-
-class ClientExecutedProviderTool(ProviderTool):
-    pass
 
 class ClientExecutedShellTool(ClientExecutedProviderTool):
     pass
