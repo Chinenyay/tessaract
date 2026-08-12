@@ -3,6 +3,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from ..base import ClientExecutedProviderTool
+from .base import Agent
 
 
 class OpenAIClick(BaseModel):
@@ -67,8 +68,6 @@ class SafetyCheck:
     code: str | None = None
     message: str | None = None
 
-class Agent:
-    agent_name: str
 
 class OpenAIComputerUseToolCall(ClientExecutedProviderTool):
     type: Literal["computer"] = "computer"
