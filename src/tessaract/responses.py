@@ -1,12 +1,11 @@
-from datetime import datetime
 from enum import Enum
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from .output_types import OutputItem, TextOutputItem, Usage
+from .types import FinishDetails, Provider, ResponseTelemetry
 
-Provider = Literal["anthropic", "openai"]
 
 class ResponseStatus(str, Enum):
     QUEUED = "queued"
@@ -16,26 +15,6 @@ class ResponseStatus(str, Enum):
     FAILED = "failed"
     CANCELLED = "cancelled"
 
-class FinishReason(str, Enum):
-    COMPLETED = "completed"
-    STOP_SEQUENCE = "stop_sequence"
-    TOOL_CALL = "tool_call"
-    MAX_TOKENS = "max_tokens"
-    CONTEXT_LIMIT = "context_limit"
-    CONTENT_FILTER = "content_filter"
-    REFUSAL = "refusal"
-    PAUSED = "paused"
-    UNKNOWN = "unknown"
-
-
-class FinishDetails(BaseModel):
-    reason: FinishReason
-    provider_reason: str | None = None
-    stop_sequence: str | None = None
-
-    termination_metadata: dict[str, Any] = Field(
-        default_factory=dict,
-    )
 
 class ResponseError(BaseModel):
     message: str
@@ -45,12 +24,6 @@ class ResponseError(BaseModel):
 class ProviderTimestamps(BaseModel):
     created_at: float | None = None
     completed_at: float | None = None
-
-class ResponseTelemetry(BaseModel):
-    request_started_at: datetime
-    response_started_at: datetime | None = None
-    first_token_at: datetime | None = None
-    response_finished_at: datetime | None = None
 
     @property
     def time_to_first_token_seconds(self):

@@ -44,5 +44,5 @@ class _CustomOpenAIModels():
         self._model_name = value
 
 def registerOpenAIModel(model_alias, model_id, model_class: OpenAIModelSelector):
-    
+    pass
 

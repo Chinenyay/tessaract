@@ -1,8 +1,9 @@
-from typing import Any, Literal, TypeAlias, Annotated, Union
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from .responses import Provider
+from .types import Provider
+
 
 class Annotation(BaseModel):
     type: Literal["citation"] = "citation"
@@ -11,7 +12,7 @@ class Annotation(BaseModel):
     title: str | None = None
     cited_text: str | None = None
 
-    provider: Literal["anthropic", "openai"]
+    provider: Provider
     provider_annotation_type: str
 
     provider_metadata: dict[str, Any] = Field(
@@ -48,15 +49,13 @@ class ToolCallOutputItem(BaseModel):
     name: str
     arguments: str
 
-
-
 class ProviderOutputItem(BaseModel):
     type: Literal["provider_output"] = "provider_output"
     provider: Provider
     provider_item_type: str
     data: dict[str, Any]
 
-type OutputItem = (TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem)
+OutputItem = (TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem)
 
 class IncompleteDetails(BaseModel):
     reason: str
