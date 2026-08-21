@@ -1,5 +1,5 @@
 
-from typing import Any, Literal
+from typing import Any, TypeAlias, Literal
 
 from pydantic import BaseModel
 
@@ -7,10 +7,13 @@ from .types import Provider
 
 role = Literal["user", "assistant", "system", "developer"]
 
+
+
+
 class ContentPart(BaseModel):
     pass
 
-class TextPart(ContentPart):
+class Text(ContentPart):
     text: str
 
 
@@ -30,17 +33,17 @@ class ProviderFileSource(BaseModel):
 
 MediaSource = URLSource | ByteSource | ProviderFileSource
 
-class ImagePart(ContentPart):
+class Image(ContentPart):
     source: MediaSource
 
-class FilePart(ContentPart):
+class File(ContentPart):
     source: MediaSource
 
-class AudioPart(ContentPart):
+class Audio(ContentPart):
     source: MediaSource
 
 
-class FunctionToolCallPart(ContentPart):
+class FunctionToolCall(ContentPart):
     type: Literal["tool_call"] = "tool_call"
     call_id: str
     name: str
@@ -53,4 +56,12 @@ class FunctionToolResult(ContentPart):
     result: Any
     is_error: bool = False
 
+class UserMessage(BaseModel):
+    role: Literal["user"] = "user"
+    content: str | Text | File | Audio | Image | FunctionToolCall | FunctionToolResult
 
+class AssistantMessage(BaseModel):
+    role: Literal["assistant"] = "assistant"
+    content: str
+
+Message: TypeAlias = str | UserMessage | AssistantMessage

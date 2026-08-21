@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class Provider(BaseModel):
     api_key: str | None = None
     base_url: str | None = None

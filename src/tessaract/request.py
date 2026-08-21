@@ -1,28 +1,56 @@
-from typing import Literal
+from collections.abc import Sequence
+from enum import Enum
+from typing import Any, TypeAlias, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from .input_types import (
-    AudioPart,
-    FilePart,
-    FunctionToolCallPart,
-    ImagePart,
-    TextPart,
+    Audio,
+    File,
+    FunctionToolCall,
+    Image,
+    Text,
     role,
 )
-from .output_types import ReasoningOutputItem
 from .tools.function import FunctionTool
+from .types import Provider
 
-content = TextPart | ImagePart | AudioPart | FilePart | FunctionToolCallPart
+Content: TypeAlias = (Text | Image | Audio | File | FunctionToolCall)
 
+
+
+class Input(BaseModel):
+    role: role
+    content: Content
+
+class ProviderRequestOptions(BaseModel):
+    type: Literal["provider_request"] = "provider_request"
+    provider: Provider
+    extra_body: dict[str, Any] = Field(default_factory=dict)
+
+class ReasoningOptions(BaseModel):
+    effort: Literal["minimal", "low", "medium", "high", "extra_high", "max"]
 
 class Request(BaseModel):
+    '''Request model for generating a response.
+        Args:
+            model: str
+            instructions: str
+            input: list[role | content]
+            tools: list[FunctionTool] | None = None
+            reasoning:  ReasoningOptions | None = None
+            stream: bool = False
+            provider_options: ProviderRequestOptions | None
+    '''
     model: str
-    messages: list[role | content]
+    instructions: str | None = None
+    input: list[Input] | None
     tools: list[FunctionTool] | None = None
-    reasoning: ReasoningOutputItem | None = None
-    previous_response_id: str | None = None
+    reasoning:  ReasoningOptions | None = None
     stream: bool = False
+    provider_options: ProviderRequestOptions | None
+
+
 
 
 
@@ -58,7 +86,7 @@ content: List[ContentPart]
     *** previous_response_id: Optional[str] ***
     prompt: Optional[ResponsePromptParam]
     *** prompt_cache_key: Optional[str] ***
-    prompt_cache_options: Optional[prompt_cache_options]
+    *** prompt_cache_options: Optional[prompt_cache_options]
     *** reasoning: Optional[Reasoning] ****
     safety_identifier: Optional[str]
     service_tier: Optional[ServiceTier]
@@ -73,6 +101,17 @@ content: List[ContentPart]
     *** tools: Optional[Iterable[ToolParam]] ***
     top_logprobs: Optional[int] = min(0), max(20)
     top_p: Optional[float]
+
+BetaCacheControlEphemeral:
+    type: Literal["ephemeral"]
+    ttl: Literl["5m", "1h"]
+
+
+PrompCacheOptions:
+    mode: Literal["implicit", "explicit"]
+    ttl: Literal["30m"]
+
+
 
 
 Anthropic Request

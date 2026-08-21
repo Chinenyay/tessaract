@@ -1,9 +1,11 @@
 from collections.abc import Mapping
 from typing import Any
 
+from pydantic import BaseModel
+
 JSONSchema = Mapping[str, Any]
 
-class FunctionTool:
+class FunctionTool(BaseModel):
     # tool definition
     name: str
     description: str

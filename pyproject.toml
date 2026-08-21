@@ -8,5 +8,5 @@ dependencies = [
     "anthropic>=0.116.0",
     "openai>=2.45.0",
     "python-dotenv>=1.2.2",
-    "pydantic>="
+    "pydantic>=2.10,<3"
 ]

@@ -70,8 +70,6 @@ class ResponseTelemetry(BaseModel):
     stream_completed_at: float | None = None
     time_to_first_token_ms: float | None = None
 
-
-
     raw_annotation: Any | None = Field(
         default=None,
         exclude=True,
