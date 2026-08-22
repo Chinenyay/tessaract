@@ -1,14 +1,46 @@
 from .adapters.openai_adapter import OpenAIAdapter
-from .providers import OpenAIProvider
+from .providers import OpenAIProvider, Provider, AnthropicProvider
 from .request import Input
 from .responses import Response
 from .request import Request
 from .input_types import UserMessage, Message
+from typing import cast
+
+"""
+self.providers = {
+    "oai": OAIProvider(),
+    "ant": AntProvider()
+    }
+
+
+self.adapters = {
+    "oai": OAIAdapter(self.providers["oai"]),
+    "ant": AntAdapter(self.providers["ant"])
+}
+
+model = "oai/gpt-5.6"
+
+provider = "oai"
+
+adapter = self.adapters["provider"]
+
+adapter.geenra
+"""
 
 
 class Tessaract:
-    def __init__(self, providers: dict[str, OpenAIProvider]):
+    def __init__(self, providers: dict[str, OpenAIProvider | AnthropicProvider]):
         self.providers = providers
+        self.adapters: dict[str, OpenAIAdapter ] = {} # alue should be a union of OpenAIAdapter | AnthropicAdapter once implemented
+        self.register_adapter()
+
+    def register_adapter(self):
+        for prefix, provider in self.providers.items():
+            if isinstance(provider, OpenAIProvider):
+                adapter = OpenAIAdapter(provider)
+            else:
+                raise NotImplementedError("not yet implemented")
+            self.adapters[prefix] = adapter
 
     def _normalize_model_name(self, model: str):
         model_parts = model.split("/")
@@ -49,8 +81,9 @@ class Tessaract:
         
         if isinstance(_request_provider, OpenAIProvider):
 
-            _request = OpenAIAdapter(request=_tessaract_request, api_key=_api_key)
-            _response = _request.generate_sync()
-            return _response
+            adapter = self.adapters[model_prefix]
+
+            _response = adapter.generate_sync(request=_tessaract_request)
+            return cast(Response, _response)
 
         return None

@@ -1,6 +1,5 @@
 import os
 from dotenv import load_dotenv
-
 from tessaract.tessaract import Tessaract, OpenAIProvider
 
 load_dotenv()
