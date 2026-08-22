@@ -6,28 +6,6 @@ from .request import Request
 from .input_types import UserMessage, Message
 from typing import cast
 
-"""
-self.providers = {
-    "oai": OAIProvider(),
-    "ant": AntProvider()
-    }
-
-
-self.adapters = {
-    "oai": OAIAdapter(self.providers["oai"]),
-    "ant": AntAdapter(self.providers["ant"])
-}
-
-model = "oai/gpt-5.6"
-
-provider = "oai"
-
-adapter = self.adapters["provider"]
-
-adapter.geenra
-"""
-
-
 class Tessaract:
     def __init__(self, providers: dict[str, OpenAIProvider | AnthropicProvider]):
         self.providers = providers
