@@ -11,13 +11,13 @@ from ..input_types import Text, UserMessage
 
 load_dotenv()
 
-# client = Tessaract(
-#     {
-#         "oai": OpenAIProvider(
-#             api_key=os.environ["OPENAI_API_KEY"]
-#         )
-#     }
-# )
+client = Tessaract(
+    {
+        "oai": OpenAIProvider(
+            api_key=os.environ["OPENAI_API_KEY"]
+        )
+    }
+)
 
 response = client.send(
     model="oai/gpt-5.5",

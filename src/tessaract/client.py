@@ -17,30 +17,40 @@ class Tessaract:
 
         return (model_prefix, model_name)
 
-    def _normalize_input(self, item: Message):
+    def _normalize_input(self, item: Message) -> Input:
         if isinstance(item, UserMessage):
             return Input(
                 role="user",
                 content=item.content
             )
+        raise TypeError(f"Unsupported message type: {type(item).__name__}")
+
+    def _build_request_model(self, model: str, input: list[Message]) -> Request:
+        normalized_input = [self._normalize_input(item) for item in input]
+        return Request(
+            model=model,
+            input=normalized_input
+        )
 
     def send(self, model: str, input: list[Message]) -> Response | None:
         model_prefix, model_name = self._normalize_model_name(model=model)
 
         if model_prefix not in self.providers:
             raise ValueError("provider prefix must match registered provider in tessaract object")
-        
-        normalized_input = [lambda item: self._normalize_input(item), input]
 
         _request_provider = self.providers[model_prefix]
 
+        _tessaract_request = self._build_request_model(model=model_name, input=input)
+
+        _api_key = _request_provider.api_key
+
+        if _api_key is None:
+            raise RuntimeError("OPENAI_API_KEY is not configured.")
+        
         if isinstance(_request_provider, OpenAIProvider):
 
-            _request = OpenAIAdapter()
-            _response = _request.generate_sync(
-                model=model_name,
-                input=normalized_input
-            )
+            _request = OpenAIAdapter(request=_tessaract_request, api_key=_api_key)
+            _response = _request.generate_sync()
             return _response
 
         return None

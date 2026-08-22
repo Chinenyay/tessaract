@@ -11,11 +11,12 @@ from .input_types import (
     Image,
     Text,
     role,
+    FunctionToolResult
 )
 from .tools.function import FunctionTool
 from .types import Provider
 
-Content: TypeAlias = (Text | Image | Audio | File | FunctionToolCall)
+Content: TypeAlias = ( str| Text | Image | Audio | File | FunctionToolCall | FunctionToolResult)
 
 
 
@@ -44,11 +45,11 @@ class Request(BaseModel):
     '''
     model: str
     instructions: str | None = None
-    input: list[Input] | None
+    input: list[Input]
     tools: list[FunctionTool] | None = None
     reasoning:  ReasoningOptions | None = None
     stream: bool = False
-    provider_options: ProviderRequestOptions | None
+    provider_options: ProviderRequestOptions | None = None
 
 
 

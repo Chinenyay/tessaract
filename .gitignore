@@ -10,3 +10,4 @@ wheels/
 .venv
 .env
 /rough
+.vscode/

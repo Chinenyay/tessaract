@@ -15,56 +15,34 @@ class OpenAIAdapter:
         self._api_key = api_key
         self._client = OpenAI(api_key=self._api_key)
 
-    def _content_part(self, part):
-        if isinstance(part, TextPart):
-            return ResponseInputTextContentParam(
-                type="input_text"
-            )
-            # return {"type": "input_text", "text": part.text}
-
-        raise ValueError(f"unsupported content part: {type(part).__name__}")
-
-    def _input_item(self, item: Input):
-        role = item.role
-
-        if isinstance(item.content, FunctionToolCallPart):
-            return {
-                "type": "function_call",
-                "call_id": item.content.call_id,
-                "name": item.content.name,
-                "arguments": item.content.arguments
-            }
-
-        if isinstance(item.content, FunctionToolResult):
-            return {
-                "type": "function_call_output",
-                "call_id": item.content.call_id,
-                "output": str(item.content.result),
-            }
-
-        if isinstance(item.content, TextPart):
+    def _input_part(self, part):
+        if isinstance(part, str):
             return {
                 "type": "input_text",
-                "text": item.content.text
+                "text": part
             }
 
+        if isinstance(part, Text):
+            return {
+                "type": "input_text",
+                "text": part.text
+            }
 
-    def normalize_request(self):
-        raw = self._request.input
+        raise TypeError(f"Unsupported input part: {type(part).__name__}")
 
-        if raw is None:
-            return []
-
-        if isinstance(raw, str):
-            return raw
-
-        return self._input_item(raw)
-
+    def build_input(self):
+        input_list = []
+        for item in self._request.input:
+            openai_item = {
+                "role": item.role,
+                "content": [self._input_part(item.content)]
+            }
+            input_list.append(openai_item)
+        return input_list
     
-
     def generate_sync(self):
         response = self._client.responses.create(
             model=self._request.model,
-            input=self.normalize_request(),
+            input=self.build_input(),
         )
-        
+        return response
