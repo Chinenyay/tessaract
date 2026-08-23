@@ -28,4 +28,4 @@ response = client.send(
         ]
 )
 
-print(response)
+print(response.output_text)

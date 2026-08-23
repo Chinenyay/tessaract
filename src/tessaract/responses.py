@@ -52,7 +52,7 @@ class Response(BaseModel):
     usage: Usage | None = None
     error: ResponseError | None = None
 
-    finish_details: FinishDetails
+    finish_details: FinishDetails | None = None
 
     provider_timestamps: ProviderTimestamps | None = None
     telemetry: ResponseTelemetry | None = None
