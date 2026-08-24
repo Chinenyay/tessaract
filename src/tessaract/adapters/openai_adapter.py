@@ -8,7 +8,7 @@ from ..input_types import (
 )
 from ..providers import OpenAIProvider
 from ..request import Input, Request
-from ..responses import Response, OpenAIResponse, ResponseStatus
+from ..response import Response, OpenAIResponse, ResponseStatus
 from ..output_types import TextOutputItem
 
 

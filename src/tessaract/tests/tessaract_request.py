@@ -25,12 +25,22 @@ history = [
             )
         ]
 
+
 response = client.send(
     model="oai/gpt-5.5",
     input=history
 )
 
-# history.append(response.output)
+history.append(response.output)
+history.append(
+    UserMessage(content="what is going on in the world today?")
+)
+
+response_2 = client.send(
+    model="oai/gpt-5.5",
+    input=history
+
+)
 
 # history = [
 #         UserMessage(
@@ -38,10 +48,3 @@ response = client.send(
 #             )
 #         ]
 
-
-output=response.output
-output_list = []
-for item in output:
-    output_list.append(item.raw)
-
-print(output_list)

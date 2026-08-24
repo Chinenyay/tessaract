@@ -2,7 +2,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from .responses import Response, ResponseError
+from .response import Response, ResponseError
 
 
 class TextDeltaEvent(BaseModel):

@@ -1,7 +1,7 @@
 from .adapters.openai_adapter import OpenAIAdapter
 from .providers import OpenAIProvider, Provider, AnthropicProvider
 from .request import Input
-from .responses import Response
+from .response import Response
 from .request import Request
 from .input_types import UserMessage, Message, AssistantMessage
 from typing import cast
@@ -27,19 +27,54 @@ class Tessaract:
 
         return (model_prefix, model_name)
 
-    def _normalize_input(self, item: Message) -> Input:
+    def _normalize_input(self, item: str | UserMessage | AssistantMessage) -> Input:
         if isinstance(item, UserMessage):
             return Input(
                 role="user",
                 content=item.content
             )
+        if isinstance(item, AssistantMessage):
+            return Input(
+                role="assistant",
+                content=item.content
+            )
         raise TypeError(f"Unsupported message type: {type(item).__name__}")
 
-    def _build_request_model(self, model: str, input: list[Message]) -> Request:
-        normalized_input = [self._normalize_input(item) for item in input]
+    def _normalize_input_list(self, items: list):
+        converted_inputs = []
+        for el in items:
+            if isinstance(el, UserMessage):
+                converted_input = Input(
+                    role="user",
+                    content=el.content
+                )
+                converted_inputs.append(converted_input)
+            if isinstance(el, AssistantMessage):
+                converted_input = Input(
+                    role="assistant",
+                    content=el.content
+                )
+                converted_inputs.append(converted_input)
+        return converted_inputs
+
+    def flatten(self, items):
+        for item in items:
+            if isinstance(item, list):
+                yield from self.flatten(item)
+            else:
+                yield item
+
+    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | list]) -> Request:
+        for item in input:
+            all_items = self.flatten(item)
+
+        normalized_list = [self._normalize_input_list(item) for item in all_items]
+            
+                
+        
         return Request(
             model=model,
-            input=normalized_input
+            input=normalized_list
         )
 
     def send(self, model: str, input: list[str | UserMessage | AssistantMessage]) -> Response | None:
