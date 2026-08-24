@@ -56,12 +56,14 @@ class FunctionToolResult(ContentPart):
     result: Any
     is_error: bool = False
 
-class UserMessage(BaseModel):
+class Message(BaseModel):
+    pass
+
+class UserMessage(Message):
     role: Literal["user"] = "user"
     content: str | Text | File | Audio | Image | FunctionToolCall | FunctionToolResult
 
-class AssistantMessage(BaseModel):
+class AssistantMessage(Message):
     role: Literal["assistant"] = "assistant"
     content: str
 
-Message: TypeAlias = str | UserMessage | AssistantMessage

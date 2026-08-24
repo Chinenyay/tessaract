@@ -6,6 +6,13 @@ from pydantic import BaseModel, Field
 
 Provider = Literal["anthropic", "openai"]
 
+class OutputItem(BaseModel):
+    raw: Any | None = Field(
+        default=None,
+        exclude=True,
+        repr=False
+    )
+
 class FinishReason(str, Enum):
     COMPLETED = "completed"
     STOP_SEQUENCE = "stop_sequence"

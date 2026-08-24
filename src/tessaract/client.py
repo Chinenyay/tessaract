@@ -3,7 +3,7 @@ from .providers import OpenAIProvider, Provider, AnthropicProvider
 from .request import Input
 from .responses import Response
 from .request import Request
-from .input_types import UserMessage, Message
+from .input_types import UserMessage, Message, AssistantMessage
 from typing import cast
 
 class Tessaract:
@@ -42,7 +42,7 @@ class Tessaract:
             input=normalized_input
         )
 
-    def send(self, model: str, input: list[Message]) -> Response | None:
+    def send(self, model: str, input: list[str | UserMessage | AssistantMessage]) -> Response | None:
         model_prefix, model_name = self._normalize_model_name(model=model)
 
         if model_prefix not in self.providers:

@@ -19,13 +19,29 @@ client = Tessaract(
     }
 )
 
-response = client.send(
-    model="oai/gpt-5.5",
-    input=[
+history = [
         UserMessage(
             content="How are you?"
             )
         ]
+
+response = client.send(
+    model="oai/gpt-5.5",
+    input=history
 )
 
-print(response.output_text)
+# history.append(response.output)
+
+# history = [
+#         UserMessage(
+#             content="whats up?"
+#             )
+#         ]
+
+
+output=response.output
+output_list = []
+for item in output:
+    output_list.append(item.raw)
+
+print(output_list)

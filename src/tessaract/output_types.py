@@ -1,8 +1,9 @@
-from typing import Any, Literal
+from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
-from .types import Provider
+from .types import Provider,  OutputItem
+
 
 
 class Annotation(BaseModel):
@@ -19,7 +20,7 @@ class Annotation(BaseModel):
         default_factory=dict,
     )
 
-class TextOutputItem(BaseModel):
+class TextOutputItem(OutputItem):
     type: Literal["text"] = "text"
     text: str
     annotations: list[Annotation] = Field(
@@ -36,26 +37,26 @@ class Usage(BaseModel):
     cache_write_input_tokens: int | None = None
     reasoning_tokens: int | None = None
 
-class ReasoningOutputItem(BaseModel):
+class ReasoningOutputItem(OutputItem):
     type: Literal["reasoning"] = "reasoning"
     text: str | None = None
     encrypted_content: str | None = None
     signature: str | None = None
 
 
-class ToolCallOutputItem(BaseModel):
+class ToolCallOutputItem(OutputItem):
     type: Literal["tool_call"] = "tool_call"
     call_id: str
     name: str
     arguments: str
 
-class ProviderOutputItem(BaseModel):
+class ProviderOutputItem(OutputItem):
     type: Literal["provider_output"] = "provider_output"
     provider: Provider
     provider_item_type: str
     data: dict[str, Any]
 
-OutputItem = (TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem)
+OutputItemUnion: TypeAlias = (TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem)
 
 class IncompleteDetails(BaseModel):
     reason: str
