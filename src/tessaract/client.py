@@ -1,4 +1,5 @@
 from .adapters.openai_adapter import OpenAIAdapter
+from .tools.function import FunctionTool
 from .providers import OpenAIProvider, Provider, AnthropicProvider
 from .request import Input, Output
 from .response import Response
@@ -56,7 +57,7 @@ class Tessaract:
             else:
                 yield item
 
-    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | list]) -> Request:
+    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | list], tools:list[FunctionTool]) -> Request:
 
         all_items = self.flatten(input)
 
@@ -64,10 +65,11 @@ class Tessaract:
 
         return Request(
             model=model,
-            input=normalized_list
+            input=normalized_list,
+            tools=tools
         )
 
-    def send(self, model: str, input: list[str | UserMessage | AssistantMessage]) -> Response | None:
+    def send(self, model: str, input: list[str | UserMessage | AssistantMessage], tools: list[FunctionTool] | None = None) -> Response | None:
         model_prefix, model_name = self._normalize_model_name(model=model)
 
         if model_prefix not in self.providers:
@@ -75,7 +77,9 @@ class Tessaract:
 
         _request_provider = self.providers[model_prefix]
 
-        _tessaract_request = self._build_request_model(model=model_name, input=input)
+        _tools = tools if tools is not None else []
+
+        _tessaract_request = self._build_request_model(model=model_name, input=input, tools=_tools)
 
         _api_key = _request_provider.api_key
 
