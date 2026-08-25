@@ -4,26 +4,19 @@ from typing import Any, TypeAlias, Literal
 
 from pydantic import BaseModel, Field
 
-from .input_types import (
-    Audio,
-    File,
-    FunctionToolCall,
-    Image,
-    Text,
-    role,
-    FunctionToolResult
-)
+from .input_types import InputItemUnion
 from .tools.function import FunctionTool
-from .types import Provider
-from .output_types import TextOutputItem
-
-Content: TypeAlias = ( str| Text | Image | Audio | File | FunctionToolCall | FunctionToolResult)
-
+from .types import Provider, Role
+from .output_types import OutputItemUnion
 
 
 class Input(BaseModel):
-    role: role
-    content: Content
+    role: Role
+    content: InputItemUnion
+
+class Output(BaseModel):
+    role: Role = "assistant"
+    content: OutputItemUnion
 
 class ProviderRequestOptions(BaseModel):
     type: Literal["provider_request"] = "provider_request"
@@ -46,7 +39,7 @@ class Request(BaseModel):
     '''
     model: str
     instructions: str | None = None
-    input: list[Input | TextOutputItem]
+    input: list[Input | Output]
     tools: list[FunctionTool] | None = None
     reasoning:  ReasoningOptions | None = None
     stream: bool = False

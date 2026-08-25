@@ -21,7 +21,7 @@ client = Tessaract(
 
 history = [
         UserMessage(
-            content="How are you?"
+            content="Who was Cleopatra"
             )
         ]
 
@@ -31,9 +31,11 @@ response = client.send(
     input=history
 )
 
+print(response.output_text)
+
 history.append(response.output)
 history.append(
-    UserMessage(content="what is going on in the world today?")
+    UserMessage(content="how old was she when she died?")
 )
 
 response_2 = client.send(
@@ -42,7 +44,7 @@ response_2 = client.send(
 
 )
 
-print(response_2)
+print(response_2.output_text)
 
 # history = [
 #         UserMessage(

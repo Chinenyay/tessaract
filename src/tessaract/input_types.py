@@ -3,12 +3,7 @@ from typing import Any, TypeAlias, Literal
 
 from pydantic import BaseModel
 
-from .types import Provider
-
-role = Literal["user", "assistant", "system", "developer"]
-
-
-
+from .types import Message
 
 class ContentPart(BaseModel):
     pass
@@ -56,14 +51,12 @@ class FunctionToolResult(ContentPart):
     result: Any
     is_error: bool = False
 
-class Message(BaseModel):
-    pass
+InputItemUnion: TypeAlias = ( str| Text | Image | Audio | File | FunctionToolCall | FunctionToolResult)
+
 
 class UserMessage(Message):
     role: Literal["user"] = "user"
     content: str | Text | File | Audio | Image | FunctionToolCall | FunctionToolResult
 
-class AssistantMessage(Message):
-    role: Literal["assistant"] = "assistant"
-    content: str
+
 

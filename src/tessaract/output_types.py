@@ -2,7 +2,7 @@ from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
-from .types import Provider,  OutputItem
+from .types import Provider,  OutputItem, Message
 
 
 
@@ -76,3 +76,7 @@ class ResponseTelemetry(BaseModel):
         exclude=True,
         repr=False,
     )
+
+class AssistantMessage(Message):
+    role: Literal["assistant"] = "assistant"
+    content: TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem

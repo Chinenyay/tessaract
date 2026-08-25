@@ -6,12 +6,17 @@ from pydantic import BaseModel, Field
 
 Provider = Literal["anthropic", "openai"]
 
+Role = Literal["user", "assistant", "system", "developer"]
+
 class OutputItem(BaseModel):
     raw: Any | None = Field(
         default=None,
         exclude=True,
         repr=False
     )
+
+class Message(BaseModel):
+    pass
 
 class FinishReason(str, Enum):
     COMPLETED = "completed"

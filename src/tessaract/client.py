@@ -1,10 +1,10 @@
 from .adapters.openai_adapter import OpenAIAdapter
 from .providers import OpenAIProvider, Provider, AnthropicProvider
-from .request import Input
+from .request import Input, Output
 from .response import Response
 from .request import Request
-from .input_types import UserMessage, Message, AssistantMessage
-from .output_types import TextOutputItem
+from .input_types import UserMessage, Message
+from .output_types import AssistantMessage, OutputItemUnion
 from typing import cast
 
 class Tessaract:
@@ -28,7 +28,16 @@ class Tessaract:
 
         return (model_prefix, model_name)
 
-    def _normalize_input(self, item: str | UserMessage | AssistantMessage | TextOutputItem) -> Input | TextOutputItem:
+    def _normalize_output(self, item: AssistantMessage) -> Output:
+
+        if isinstance(item, OutputItemUnion):
+            return Output(
+                content=item
+            ) 
+
+        raise TypeError(f"Unsupported message type: {type(item).__name__}")
+    
+    def _normalize_input(self, item: str | UserMessage) -> Input:
         if isinstance(item, str):
             return Input(role="user", content=item)
         
@@ -37,14 +46,6 @@ class Tessaract:
                 role="user",
                 content=item.content
             )
-        if isinstance(item, AssistantMessage):
-            return Input(
-                role="assistant",
-                content=item.content
-            )
-
-        if isinstance(item, TextOutputItem):
-            return item
         
         raise TypeError(f"Unsupported message type: {type(item).__name__}")
 
@@ -55,18 +56,18 @@ class Tessaract:
             else:
                 yield item
 
-    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | TextOutputItem | list]) -> Request:
+    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | list]) -> Request:
 
         all_items = self.flatten(input)
 
-        normalized_list = [self._normalize_input(item) for item in all_items]
+        normalized_list = [self._normalize_input(item) if isinstance(item, UserMessage) else self._normalize_output(item) for item in all_items]
 
         return Request(
             model=model,
             input=normalized_list
         )
 
-    def send(self, model: str, input: list[str | UserMessage | AssistantMessage | TextOutputItem]) -> Response | None:
+    def send(self, model: str, input: list[str | UserMessage | AssistantMessage]) -> Response | None:
         model_prefix, model_name = self._normalize_model_name(model=model)
 
         if model_prefix not in self.providers:
