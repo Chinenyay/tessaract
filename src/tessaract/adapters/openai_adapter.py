@@ -30,16 +30,26 @@ class OpenAIAdapter:
                 "text": part.text
             }
 
+        if isinstance(part, TextOutputItem):
+            return {
+                "type": "output_text",
+                "text": part.text
+            }
+            
+
         raise TypeError(f"Unsupported input part: {type(part).__name__}")
 
     def build_input(self, request: Request):
         input_list = []
         for item in request.input:
+            role = "assistant" if isinstance(item, TextOutputItem) else item.role
+            content = item if isinstance(item, TextOutputItem) else item.content
             openai_item = {
-                "role": item.role,
-                "content": [self._input_part(item.content)]
+                "role": role,
+                "content": [self._input_part(content)]
             }
             input_list.append(openai_item)
+
         return input_list
 
     def _normalize_output(self, output_items):

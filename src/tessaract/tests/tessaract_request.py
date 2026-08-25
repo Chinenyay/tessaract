@@ -42,6 +42,8 @@ response_2 = client.send(
 
 )
 
+print(response_2)
+
 # history = [
 #         UserMessage(
 #             content="whats up?"

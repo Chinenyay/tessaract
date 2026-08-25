@@ -15,6 +15,7 @@ from .input_types import (
 )
 from .tools.function import FunctionTool
 from .types import Provider
+from .output_types import TextOutputItem
 
 Content: TypeAlias = ( str| Text | Image | Audio | File | FunctionToolCall | FunctionToolResult)
 
@@ -45,7 +46,7 @@ class Request(BaseModel):
     '''
     model: str
     instructions: str | None = None
-    input: list[Input]
+    input: list[Input | TextOutputItem]
     tools: list[FunctionTool] | None = None
     reasoning:  ReasoningOptions | None = None
     stream: bool = False

@@ -4,6 +4,7 @@ from .request import Input
 from .response import Response
 from .request import Request
 from .input_types import UserMessage, Message, AssistantMessage
+from .output_types import TextOutputItem
 from typing import cast
 
 class Tessaract:
@@ -27,7 +28,7 @@ class Tessaract:
 
         return (model_prefix, model_name)
 
-    def _normalize_input(self, item: str | UserMessage | AssistantMessage) -> Input:
+    def _normalize_input(self, item: str | UserMessage | AssistantMessage | TextOutputItem) -> Input | TextOutputItem:
         if isinstance(item, str):
             return Input(role="user", content=item)
         
@@ -41,6 +42,10 @@ class Tessaract:
                 role="assistant",
                 content=item.content
             )
+
+        if isinstance(item, TextOutputItem):
+            return item
+        
         raise TypeError(f"Unsupported message type: {type(item).__name__}")
 
     def flatten(self, items):
@@ -50,7 +55,7 @@ class Tessaract:
             else:
                 yield item
 
-    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | list]) -> Request:
+    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | TextOutputItem | list]) -> Request:
 
         all_items = self.flatten(input)
 
@@ -61,7 +66,7 @@ class Tessaract:
             input=normalized_list
         )
 
-    def send(self, model: str, input: list[str | UserMessage | AssistantMessage]) -> Response | None:
+    def send(self, model: str, input: list[str | UserMessage | AssistantMessage | TextOutputItem]) -> Response | None:
         model_prefix, model_name = self._normalize_model_name(model=model)
 
         if model_prefix not in self.providers:
