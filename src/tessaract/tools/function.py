@@ -10,6 +10,7 @@ class FunctionTool(BaseModel):
     name: str
     description: str
     input_schema: JSONSchema
+    strict: bool | None = None
 
 
 # function toolcall

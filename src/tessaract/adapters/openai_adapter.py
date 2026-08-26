@@ -1,6 +1,7 @@
 from openai import OpenAI
 from openai.types.responses import EasyInputMessageParam, ResponseOutputMessage, ResponseOutputText
 
+from ..tools.function import FunctionTool
 from ..input_types import (
     Text,
     FunctionToolCall,
@@ -68,8 +69,24 @@ class OpenAIAdapter:
                         
                         _output_list.append(tessaract_output_text)
 
+            if isinstance(item, FunctionToolCall):
+                
+
         return _output_list
 
+    def _native_tools(self, tools: list[FunctionTool]):
+        _native_tools_list = []
+        for tool in tools:
+            _native_tool_schema = {
+                "type": "function",
+                "name": tool.name,
+                "description": tool.description,
+                "parameters": tool.input_schema,
+                "strict": tool.strict if tool.strict is not None else True
+            }
+            _native_tools_list.append(_native_tool_schema)
+        return _native_tools_list
+    
     def _response_status(self, status: str):
         try:
             return ResponseStatus(status)
@@ -81,7 +98,7 @@ class OpenAIAdapter:
         _raw_response = self._client.responses.create(
             model=request.model,
             input=self.build_input(request=request),
-            tools=request.tools
+            tools=self._native_tools(request.tools)
         )
 
         response = OpenAIResponse(

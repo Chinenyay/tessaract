@@ -6,7 +6,7 @@ from ..providers import OpenAIProvider
 
 from ..request import Input
 
-from ..input_types import Text, UserMessage
+from ..input_types import Text, UserMessage, FunctionToolResult
 from ..tools.function import FunctionTool
 
 
@@ -28,6 +28,22 @@ def get_weather(city: str):
 
 TOOL_MAP = {"get_weather": get_weather}
 
+# {
+# 	"type": "function",
+# 	"name": "get_weather",
+# 	"description": "some description",
+# 	"parameters": {
+# 		"type": "object",
+# 		"properties": {
+# 			"city": {
+# 				"type": "string",
+# 				"description": "some description",
+# 			},
+# 		},
+# 		"required": [sign],
+# 	},
+# }
+
 TOOLS = [
     FunctionTool(
         name="get_weather",
@@ -39,9 +55,11 @@ TOOLS = [
                     "type": "string",
                     "description": "the city, eg paris",
                 },
+            },
             "required": ["city"],
-            }
-        }
+            "additionalProperties": False,
+        },
+        strict=True
     )
 ]
 
@@ -54,7 +72,8 @@ history = [
 
 response = client.send(
     model="oai/gpt-5.5",
-    input=history
+    input=history,
+    tools=TOOLS
 )
 
 print(response.output_text)
@@ -67,15 +86,37 @@ history.append(
 
 response_2 = client.send(
     model="oai/gpt-5.5",
-    input=history
+    input=history,
+    tools=TOOLS
 )
+
+print(response_2.raw_response)
 
 response_2_output = response_2.output
 
 for item in response_2_output:
-    if item.type == ""
+    if item.type == "tool_call":
+        tool_name = item.name
+        tool_args = item.arguments
+
+        function = TOOL_MAP[tool_name]
+
+        function_result = function(**tool_args)
+
+        history.append(
+            FunctionToolResult(
+                call_id=item.call_id,
+                result=function_result
+            )
+        )
+
+response_3 = client.send(
+    model="oai/gpt-5.5",
+    input=history,
+    tools=TOOLS
+)
 
 
 
-print(response_2.output)
+print(response_3.output)
 
