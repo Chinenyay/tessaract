@@ -37,26 +37,18 @@ class File(ContentPart):
 class Audio(ContentPart):
     source: MediaSource
 
-
-class FunctionToolCall(ContentPart):
-    type: Literal["tool_call"] = "tool_call"
-    call_id: str
-    name: str
-    arguments: str
-
-
-class FunctionToolResult(ContentPart):
+class ToolCallResult(ContentPart):
     type: Literal["function_tool_result"] = "function_tool_result"
     call_id: str
     result: Any
     is_error: bool = False
 
-InputItemUnion: TypeAlias = ( str| Text | Image | Audio | File | FunctionToolCall | FunctionToolResult)
+InputItemUnion: TypeAlias = ( str| Text | Image | Audio | File | ToolCallResult)
 
 
 class UserMessage(Message):
     role: Literal["user"] = "user"
-    content: str | Text | File | Audio | Image | FunctionToolCall | FunctionToolResult
+    content: str | Text | File | Audio | Image | ToolCallResult
 
 
 

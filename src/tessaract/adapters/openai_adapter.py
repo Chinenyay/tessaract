@@ -1,16 +1,15 @@
 from openai import OpenAI
-from openai.types.responses import EasyInputMessageParam, ResponseOutputMessage, ResponseOutputText
+from openai.types.responses import EasyInputMessageParam, ResponseOutputMessage, ResponseOutputText, ResponseFunctionToolCall
 
 from ..tools.function import FunctionTool
 from ..input_types import (
     Text,
-    FunctionToolCall,
-    FunctionToolResult
+    ToolCallResult
 )
 from ..providers import OpenAIProvider
 from ..request import Input, Request
 from ..response import Response, OpenAIResponse, ResponseStatus
-from ..output_types import TextOutputItem
+from ..output_types import TextOutputItem, ToolCallOutputItem
 
 
 class OpenAIAdapter:
@@ -43,13 +42,20 @@ class OpenAIAdapter:
     def build_input(self, request: Request):
         input_list = []
         for item in request.input:
-            role = "assistant" if isinstance(item, TextOutputItem) else item.role
-            content = item if isinstance(item, TextOutputItem) else item.content
-            openai_item = {
-                "role": role,
-                "content": [self._input_part(content)]
-            }
-            input_list.append(openai_item)
+            if isinstance(item, ToolCallResult):
+                openai_item = {
+                    "type": "function_call_output",
+                    "call_id": item.call_id,
+                    "output": str(item.result)
+                }
+            else:
+                role = "assistant" if isinstance(item, TextOutputItem) else item.role
+                content = item if isinstance(item, TextOutputItem) else item.content
+                openai_item = {
+                    "role": role,
+                    "content": [self._input_part(content)]
+                }
+                input_list.append(openai_item)
 
         return input_list
 
@@ -69,8 +75,14 @@ class OpenAIAdapter:
                         
                         _output_list.append(tessaract_output_text)
 
-            if isinstance(item, FunctionToolCall):
-                
+            if isinstance(item, ResponseFunctionToolCall):
+                tessaract_function_call=ToolCallOutputItem(
+                    raw=item,
+                    call_id=item.call_id,
+                    name=item.name,
+                    arguments=item.arguments
+                )
+                _output_list.append(tessaract_function_call)
 
         return _output_list
 

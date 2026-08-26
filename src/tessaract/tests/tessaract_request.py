@@ -6,7 +6,7 @@ from ..providers import OpenAIProvider
 
 from ..request import Input
 
-from ..input_types import Text, UserMessage, FunctionToolResult
+from ..input_types import Text, UserMessage, ToolCallResult
 from ..tools.function import FunctionTool
 
 
@@ -104,7 +104,7 @@ for item in response_2_output:
         function_result = function(**tool_args)
 
         history.append(
-            FunctionToolResult(
+            ToolCallResult(
                 call_id=item.call_id,
                 result=function_result
             )
