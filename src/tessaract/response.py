@@ -3,7 +3,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .output_types import OutputItem, TextOutputItem, Usage
+from .output_types import OutputItem, TextOutputItem, Usage, AssistantMessage, OutputItemUnion
 from .types import FinishDetails, Provider, ResponseTelemetry
 
 
@@ -45,7 +45,7 @@ class Response(BaseModel):
     model: str
     status: ResponseStatus
 
-    output: list[OutputItem] = Field(
+    output: list[OutputItemUnion] = Field(
         default_factory=list,
     )
 
@@ -102,6 +102,10 @@ class OpenAIResponse(Response):
         if raw is None:
             return None
         return raw.service_tier
+
+    @property
+    def message(self):
+        return AssistantMessage(content=self.output)
 
 class AnthropicResponse(Response):
     provider: Literal["anthropic"] = "anthropic"

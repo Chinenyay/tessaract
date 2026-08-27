@@ -7,9 +7,9 @@ from ..input_types import (
     ToolCallResult
 )
 from ..providers import OpenAIProvider
-from ..request import Input, Request
+from ..request import Input, Request, Output
 from ..response import Response, OpenAIResponse, ResponseStatus
-from ..output_types import TextOutputItem, ToolCallOutputItem
+from ..output_types import TextOutputItem, ToolCallOutputItem, AssistantMessage
 
 
 class OpenAIAdapter:
@@ -42,12 +42,23 @@ class OpenAIAdapter:
     def build_input(self, request: Request):
         input_list = []
         for item in request.input:
-            if isinstance(item, ToolCallResult):
+            if isinstance(item, Output) and isinstance(item.content, ToolCallOutputItem):
+                openai_item = {
+                    "type": "function_call",
+                    "call_id": item.content.call_id,
+                    "name": item.content.name,
+                    "arguments": item.content.arguments
+                }
+                input_list.append(openai_item)
+
+            elif isinstance(item, ToolCallResult):
                 openai_item = {
                     "type": "function_call_output",
                     "call_id": item.call_id,
                     "output": str(item.result)
                 }
+                input_list.append(openai_item)
+
             else:
                 role = "assistant" if isinstance(item, TextOutputItem) else item.role
                 content = item if isinstance(item, TextOutputItem) else item.content
@@ -121,5 +132,5 @@ class OpenAIAdapter:
             raw_response=_raw_response
         )
 
-
         return response
+

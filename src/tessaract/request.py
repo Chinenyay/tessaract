@@ -4,7 +4,7 @@ from typing import Any, TypeAlias, Literal
 
 from pydantic import BaseModel, Field
 
-from .input_types import InputItemUnion
+from .input_types import InputItemUnion, ToolCallResult
 from .tools.function import FunctionTool
 from .types import Provider, Role
 from .output_types import OutputItemUnion
@@ -39,7 +39,7 @@ class Request(BaseModel):
     '''
     model: str
     instructions: str | None = None
-    input: list[Input | Output]
+    input: list[Input | Output | ToolCallResult]
     tools: list[FunctionTool] | None = None
     reasoning:  ReasoningOptions | None = None
     stream: bool = False

@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import json
 
 from ..client import Tessaract
 from ..providers import OpenAIProvider
@@ -78,7 +79,7 @@ response = client.send(
 
 print(response.output_text)
 
-history.append(response.output)
+history.append(response.message)
 
 history.append(
     UserMessage(content="What is the weather there?")
@@ -90,6 +91,8 @@ response_2 = client.send(
     tools=TOOLS
 )
 
+history.append(response_2.message)
+
 print(response_2.raw_response)
 
 response_2_output = response_2.output
@@ -97,7 +100,7 @@ response_2_output = response_2.output
 for item in response_2_output:
     if item.type == "tool_call":
         tool_name = item.name
-        tool_args = item.arguments
+        tool_args = json.loads(item.arguments)
 
         function = TOOL_MAP[tool_name]
 

@@ -79,4 +79,4 @@ class ResponseTelemetry(BaseModel):
 
 class AssistantMessage(Message):
     role: Literal["assistant"] = "assistant"
-    content: TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem
+    content: list[TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem]
