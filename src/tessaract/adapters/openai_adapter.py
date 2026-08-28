@@ -9,7 +9,7 @@ from ..output_types import TextOutputItem, ToolCallOutputItem
 from ..providers import OpenAIProvider
 from ..request import Output, Request
 from ..response import OpenAIResponse, ResponseStatus
-from ..tools.function import FunctionTool
+from ..tools.function import FunctionTool, InputSchema
 
 
 class OpenAIAdapter:
@@ -97,6 +97,22 @@ class OpenAIAdapter:
 
         return _output_list
 
+    def _native_tool_parameters(self, input_schema: InputSchema):
+        _properties = {}
+        for prop_name, prop_schema in input_schema.properties.items():
+            _properties[prop_name] = {
+                    "type": prop_schema.type,
+                    "description": prop_schema.description
+                }
+
+        return {
+            "type": input_schema.type,
+            "properties": _properties,
+            "required": input_schema.required,
+            "additionalProperties": input_schema.additionalProperties
+
+        }
+
     def _native_tools(self, tools: list[FunctionTool]):
         _native_tools_list = []
         for tool in tools:
@@ -104,7 +120,7 @@ class OpenAIAdapter:
                 "type": "function",
                 "name": tool.name,
                 "description": tool.description,
-                "parameters": tool.input_schema,
+                "parameters": self._native_tool_parameters(tool.input_schema),
                 "strict": tool.strict if tool.strict is not None else True
             }
             _native_tools_list.append(_native_tool_schema)

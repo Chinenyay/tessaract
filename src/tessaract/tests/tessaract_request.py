@@ -8,7 +8,7 @@ from ..providers import OpenAIProvider
 from ..request import Input
 
 from ..input_types import Text, UserMessage, ToolCallResult
-from ..tools.function import FunctionTool
+from ..tools.function import FunctionTool, InputSchema, Property
 
 
 load_dotenv()
@@ -49,17 +49,16 @@ TOOLS = [
     FunctionTool(
         name="get_weather",
         description="get the weather of a city",
-        input_schema={
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string",
-                    "description": "the city, eg paris",
-                },
+        input_schema=InputSchema(
+            properties={
+                "city": Property(
+                    type="string",
+                    description="the city to get weather about"
+                )
             },
-            "required": ["city"],
-            "additionalProperties": False,
-        },
+            required=["city"],
+            additionalProperties=False
+        ),
         strict=True
     )
 ]
