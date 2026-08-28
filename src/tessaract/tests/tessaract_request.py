@@ -121,5 +121,5 @@ response_3 = client.send(
 
 
 
-print(response_3.output)
+print(response_3.output_text)
 

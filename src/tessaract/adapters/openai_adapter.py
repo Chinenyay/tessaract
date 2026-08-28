@@ -1,15 +1,15 @@
-from openai import OpenAI
-from openai.types.responses import EasyInputMessageParam, ResponseOutputMessage, ResponseOutputText, ResponseFunctionToolCall
-
-from ..tools.function import FunctionTool
-from ..input_types import (
-    Text,
-    ToolCallResult
+from openai.types.responses import (
+    ResponseFunctionToolCall,
+    ResponseOutputMessage,
+    ResponseOutputText,
 )
+
+from ..input_types import Text, ToolCallResult
+from ..output_types import TextOutputItem, ToolCallOutputItem
 from ..providers import OpenAIProvider
-from ..request import Input, Request, Output
-from ..response import Response, OpenAIResponse, ResponseStatus
-from ..output_types import TextOutputItem, ToolCallOutputItem, AssistantMessage
+from ..request import Output, Request
+from ..response import OpenAIResponse, ResponseStatus
+from ..tools.function import FunctionTool
 
 
 class OpenAIAdapter:

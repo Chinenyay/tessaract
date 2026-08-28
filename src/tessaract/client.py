@@ -11,7 +11,7 @@ from typing import cast
 class Tessaract:
     def __init__(self, providers: dict[str, OpenAIProvider | AnthropicProvider]):
         self.providers = providers
-        self.adapters: dict[str, OpenAIAdapter ] = {} # alue should be a union of OpenAIAdapter | AnthropicAdapter once implemented
+        self.adapters: dict[str, OpenAIAdapter ] = {} # value should be a union of OpenAIAdapter | AnthropicAdapter once implemented
         self.register_adapter()
 
     def register_adapter(self):
@@ -59,7 +59,6 @@ class Tessaract:
                 yield item
 
     def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | ToolCallResult | list], tools:list[FunctionTool]) -> Request:
-
         all_items = self.flatten(input)
 
         normalized_list = []
@@ -69,7 +68,6 @@ class Tessaract:
                 normalized_list.extend(self._normalize_output(item))
             else:
                 normalized_list.append(self._normalize_input(item))
-
 
         return Request(
             model=model,
