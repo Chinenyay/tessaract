@@ -3,7 +3,7 @@ from .tools.function import FunctionTool
 from .providers import OpenAIProvider, Provider, AnthropicProvider
 from .request import Input, Output
 from .response import Response
-from .request import Request
+from .request import Request, ReasoningOptions
 from .input_types import UserMessage, ToolCallResult, InputItemUnion, Message
 from .output_types import AssistantMessage, OutputItemUnion
 from typing import cast
@@ -58,7 +58,13 @@ class Tessaract:
             else:
                 yield item
 
-    def _build_request_model(self, model: str, input: list[str | UserMessage | AssistantMessage | ToolCallResult | list], tools:list[FunctionTool]) -> Request:
+    def _build_request_model(
+        self,
+        model: str,
+        input: list[str | UserMessage | AssistantMessage | ToolCallResult | list],
+        reasoning: ReasoningOptions,
+        tools: list[FunctionTool],
+    ) -> Request:
         all_items = self.flatten(input)
 
         normalized_list = []
@@ -72,10 +78,17 @@ class Tessaract:
         return Request(
             model=model,
             input=normalized_list,
-            tools=tools
+            reasoning=,
+            tools=tools,
         )
 
-    def send(self, model: str, input: list[str | UserMessage | AssistantMessage], tools: list[FunctionTool] | None = None) -> Response | None:
+    def send(
+            self, model: str, 
+            input: list[str | UserMessage | AssistantMessage],
+            reasoning: ReasoningOptions | None = None,
+            tools: list[FunctionTool] | None = None
+        ) -> Response | None:
+
         model_prefix, model_name = self._normalize_model_name(model=model)
 
         if model_prefix not in self.providers:
@@ -85,7 +98,8 @@ class Tessaract:
 
         _tools = tools if tools is not None else []
 
-        _tessaract_request = self._build_request_model(model=model_name, input=input, tools=_tools)
+
+        _tessaract_request = self._build_request_model(model=model_name, input=input, reasoning=reasoning, tools=_tools)
 
         _api_key = _request_provider.api_key
 

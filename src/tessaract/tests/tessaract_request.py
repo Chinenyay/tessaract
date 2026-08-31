@@ -65,7 +65,7 @@ TOOLS = [
 
 history = [
         UserMessage(
-            content="What is the capital of France?"
+            content="How would you prove the Reimann hypothesis?"
             )
         ]
 
@@ -73,52 +73,57 @@ history = [
 response = client.send(
     model="oai/gpt-5.5",
     input=history,
+    reasoning=ReasoningOptions(
+        effort="high",
+        summary="auto"
+    ),
     tools=TOOLS
 )
 
-print(response.output_text)
+print(response.raw_response)
 
-history.append(response.message)
+# history.append(response.message)
 
-history.append(
-    UserMessage(content="What is the weather there?")
-)
+# history.append(
+#     UserMessage(content="What is the weather there?")
+# )
 
-response_2 = client.send(
-    model="oai/gpt-5.5",
-    input=history,
-    tools=TOOLS
-)
+# response_2 = client.send(
+#     model="oai/gpt-5.5",
+#     reasoning="high",
+#     input=history,
+#     tools=TOOLS
+# )
 
-history.append(response_2.message)
+# history.append(response_2.message)
 
-print(response_2.raw_response)
+# print(response_2.raw_response)
 
-response_2_output = response_2.output
+# response_2_output = response_2.output
 
-for item in response_2_output:
-    if item.type == "tool_call":
-        tool_name = item.name
-        tool_args = json.loads(item.arguments)
+# for item in response_2_output:
+#     if item.type == "tool_call":
+#         tool_name = item.name
+#         tool_args = json.loads(item.arguments)
 
-        function = TOOL_MAP[tool_name]
+#         function = TOOL_MAP[tool_name]
 
-        function_result = function(**tool_args)
+#         function_result = function(**tool_args)
 
-        history.append(
-            ToolCallResult(
-                call_id=item.call_id,
-                result=function_result
-            )
-        )
+#         history.append(
+#             ToolCallResult(
+#                 call_id=item.call_id,
+#                 result=function_result
+#             )
+#         )
 
-response_3 = client.send(
-    model="oai/gpt-5.5",
-    input=history,
-    tools=TOOLS
-)
+# response_3 = client.send(
+#     model="oai/gpt-5.5",
+#     input=history,
+#     tools=TOOLS
+# )
 
 
 
-print(response_3.output_text)
+# print(response_3.output_text)
 

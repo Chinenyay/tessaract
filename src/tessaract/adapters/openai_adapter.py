@@ -132,7 +132,6 @@ class OpenAIAdapter:
         except ValueError:
             raise ValueError(f"Unsupported response status {status}") from None
 
-
     def generate_sync(self, request: Request):
         _raw_response = self._client.responses.create(
             model=request.model,

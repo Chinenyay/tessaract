@@ -24,8 +24,8 @@ class ProviderRequestOptions(BaseModel):
     extra_body: dict[str, Any] = Field(default_factory=dict)
 
 class ReasoningOptions(BaseModel):
-    effort: Literal["minimal", "low", "medium", "high", "extra_high", "max"]
-
+    effort: Literal["minimal", "low", "medium", "high", "extra_high", "max"] | None = None
+    summary: Literal["concise", "auto", "detailed"] = "auto"
 class Request(BaseModel):
     '''Request model for generating a response.
         Args:
