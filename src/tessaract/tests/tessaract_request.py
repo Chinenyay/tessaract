@@ -5,7 +5,7 @@ import json
 from ..client import Tessaract
 from ..providers import OpenAIProvider
 
-from ..request import Input
+from ..request import Input, ReasoningOptions
 
 from ..input_types import Text, UserMessage, ToolCallResult
 from ..tools.function import FunctionTool, InputSchema, Property
@@ -45,23 +45,23 @@ TOOL_MAP = {"get_weather": get_weather}
 # 	},
 # }
 
-TOOLS = [
-    FunctionTool(
-        name="get_weather",
-        description="get the weather of a city",
-        input_schema=InputSchema(
-            properties={
-                "city": Property(
-                    type="string",
-                    description="the city to get weather about"
-                )
-            },
-            required=["city"],
-            additionalProperties=False
-        ),
-        strict=True
-    )
-]
+# TOOLS = [
+#     FunctionTool(
+#         name="get_weather",
+#         description="get the weather of a city",
+#         input_schema=InputSchema(
+#             properties={
+#                 "city": Property(
+#                     type="string",
+#                     description="the city to get weather about"
+#                 )
+#             },
+#             required=["city"],
+#             additionalProperties=False
+#         ),
+#         strict=True
+#     )
+# ]
 
 history = [
         UserMessage(
@@ -71,13 +71,12 @@ history = [
 
 
 response = client.send(
-    model="oai/gpt-5.5",
+    model="oai/gpt-5.6-luna",
     input=history,
     reasoning=ReasoningOptions(
-        effort="high",
         summary="auto"
-    ),
-    tools=TOOLS
+
+    )
 )
 
 print(response.raw_response)

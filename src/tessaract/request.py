@@ -25,7 +25,9 @@ class ProviderRequestOptions(BaseModel):
 
 class ReasoningOptions(BaseModel):
     effort: Literal["minimal", "low", "medium", "high", "extra_high", "max"] | None = None
-    summary: Literal["concise", "auto", "detailed"] = "auto"
+    summary: Literal["concise", "auto", "detailed"] | None = None
+    mode: Literal["standard", "pro"] | None = None
+
 class Request(BaseModel):
     '''Request model for generating a response.
         Args:

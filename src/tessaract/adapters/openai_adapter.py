@@ -1,13 +1,13 @@
 from openai.types.responses import (
     ResponseFunctionToolCall,
     ResponseOutputMessage,
-    ResponseOutputText,
+    ResponseOutputText
 )
 
 from ..input_types import Text, ToolCallResult
 from ..output_types import TextOutputItem, ToolCallOutputItem
 from ..providers import OpenAIProvider
-from ..request import Output, Request
+from ..request import Output, Request, ReasoningOptions
 from ..response import OpenAIResponse, ResponseStatus
 from ..tools.function import FunctionTool, InputSchema
 
@@ -132,11 +132,27 @@ class OpenAIAdapter:
         except ValueError:
             raise ValueError(f"Unsupported response status {status}") from None
 
+    def _native_reasoning_params(self, reasoning: ReasoningOptions | None = None):
+        if reasoning is None:
+            return None
+
+        _summary = reasoning.summary if reasoning.summary else "auto"
+        _reasoning_params = {}
+        _effort = reasoning.effort if reasoning.effort else "none"
+        if reasoning.mode:
+            _reasoning_params["mode"] = reasoning.mode
+
+        _reasoning_params["summary"] = _summary
+        _reasoning_params["effort"] = _effort
+        return _reasoning_params
+
+        
     def generate_sync(self, request: Request):
         _raw_response = self._client.responses.create(
             model=request.model,
             input=self.build_input(request=request),
-            tools=self._native_tools(request.tools)
+            tools=self._native_tools(request.tools),
+            reasoning=self._native_reasoning_params(request.reasoning) 
         )
 
         response = OpenAIResponse(

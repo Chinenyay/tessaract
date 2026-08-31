@@ -75,10 +75,11 @@ class Tessaract:
             else:
                 normalized_list.append(self._normalize_input(item))
 
+
         return Request(
             model=model,
             input=normalized_list,
-            reasoning=,
+            reasoning=reasoning,
             tools=tools,
         )
 
@@ -97,7 +98,6 @@ class Tessaract:
         _request_provider = self.providers[model_prefix]
 
         _tools = tools if tools is not None else []
-
 
         _tessaract_request = self._build_request_model(model=model_name, input=input, reasoning=reasoning, tools=_tools)
 
