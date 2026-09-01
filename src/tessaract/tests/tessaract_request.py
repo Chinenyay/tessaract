@@ -65,7 +65,7 @@ TOOL_MAP = {"get_weather": get_weather}
 
 history = [
         UserMessage(
-            content="How would you prove the Reimann hypothesis?"
+            content="What is the shortest path to get to Picadilly Circus from Paddington on the tube?"
             )
         ]
 
@@ -74,30 +74,40 @@ response = client.send(
     model="oai/gpt-5.6-luna",
     input=history,
     reasoning=ReasoningOptions(
-        summary="auto"
-
+        summary="concise",
+        effort="low"
     )
 )
 
+print("======= First Response =========")
 print(response.raw_response)
+print("=" * 10)
+
+history.append(response.message)
 
 # history.append(response.message)
 
-# history.append(
-#     UserMessage(content="What is the weather there?")
-# )
 
-# response_2 = client.send(
-#     model="oai/gpt-5.5",
-#     reasoning="high",
-#     input=history,
-#     tools=TOOLS
-# )
+history.append(
+    UserMessage(content="What is the weather there?")
+)
 
-# history.append(response_2.message)
+response_2 = client.send(
+    model="oai/gpt-5.6-luna",
+    reasoning=ReasoningOptions(
+        summary="concise",
+        effort="low"
+    ),
+    input=history,
+)
 
-# print(response_2.raw_response)
+history.append(response_2.message)
 
+print("======= Second Response =========")
+print(response_2.raw_response)
+print("=" * 10)
+
+print(history)
 # response_2_output = response_2.output
 
 # for item in response_2_output:

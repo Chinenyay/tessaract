@@ -39,6 +39,7 @@ class Usage(BaseModel):
 
 class ReasoningOutputItem(OutputItem):
     type: Literal["reasoning"] = "reasoning"
+    id: str | None = None
     text: str | None = None
     encrypted_content: str | None = None
     signature: str | None = None

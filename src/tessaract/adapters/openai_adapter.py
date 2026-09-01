@@ -1,11 +1,12 @@
 from openai.types.responses import (
     ResponseFunctionToolCall,
     ResponseOutputMessage,
-    ResponseOutputText
+    ResponseOutputText,
+    ResponseReasoningItem
 )
 
 from ..input_types import Text, ToolCallResult
-from ..output_types import TextOutputItem, ToolCallOutputItem
+from ..output_types import ReasoningOutputItem, TextOutputItem, ToolCallOutputItem
 from ..providers import OpenAIProvider
 from ..request import Output, Request, ReasoningOptions
 from ..response import OpenAIResponse, ResponseStatus
@@ -42,7 +43,10 @@ class OpenAIAdapter:
     def build_input(self, request: Request):
         input_list = []
         for item in request.input:
-            if isinstance(item, Output) and isinstance(item.content, ToolCallOutputItem):
+            if isinstance(item, Output) and isinstance(item.content, ReasoningOutputItem):
+                input_list.append(item.content.raw.model_dump())
+
+            elif isinstance(item, Output) and isinstance(item.content, ToolCallOutputItem):
                 openai_item = {
                     "type": "function_call",
                     "call_id": item.content.call_id,
@@ -85,6 +89,14 @@ class OpenAIAdapter:
                         )
                         
                         _output_list.append(tessaract_output_text)
+
+            if isinstance(item, ResponseReasoningItem):
+                tessaract_reasoning_item=ReasoningOutputItem(
+                    raw=item,
+                    encrypted_content=item.encrypted_content,
+                    text="\n".join(summary.text for summary in item.summary)
+                )
+                _output_list.append(tessaract_reasoning_item)
 
             if isinstance(item, ResponseFunctionToolCall):
                 tessaract_function_call=ToolCallOutputItem(

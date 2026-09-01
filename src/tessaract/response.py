@@ -79,6 +79,10 @@ class Response(BaseModel):
     def response_id(self) -> str:
         return self.id
 
+    @property
+    def message(self):
+        return AssistantMessage(content=self.output)
+
 class OpenAIResponse(Response):
     provider: Literal["openai"] = "openai"
 
@@ -103,9 +107,7 @@ class OpenAIResponse(Response):
             return None
         return raw.service_tier
 
-    @property
-    def message(self):
-        return AssistantMessage(content=self.output)
+
 
 class AnthropicResponse(Response):
     provider: Literal["anthropic"] = "anthropic"
