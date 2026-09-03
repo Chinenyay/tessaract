@@ -1,7 +1,7 @@
-from typing import cast
+from typing_extensions import Protocol
+
 from dataclasses import dataclass, field
 
-from openai import OpenAI
 
 @dataclass
 class Provider:
@@ -21,17 +21,4 @@ class Provider:
     def client(self):
         raise NotImplementedError("not yet implemented")
 
-@dataclass
-class OpenAIProvider(Provider):
-    def __post_init__(self):
-        self._client = OpenAI(api_key=self.api_key, **self.provider_args)
-
-    @property
-    def client(self) -> OpenAI:
-        return cast(OpenAI, self._client)
-
-
-
-class AnthropicProvider(Provider):
-    pass
-
+    def map_input_message(self):
