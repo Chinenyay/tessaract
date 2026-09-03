@@ -20,12 +20,31 @@ class Annotation(BaseModel):
         default_factory=dict,
     )
 
-class TextOutputItem(OutputItem):
+class AssistantMessage(Message):
+    role: Literal["assistant"] = "assistant"
+    raw: Any 
+
+class TextOutputItem(AssistantMessage):
     type: Literal["text"] = "text"
     text: str
     annotations: list[Annotation] = Field(
         default_factory=list,
     )
+
+class ReasoningOutputItem(AssistantMessage):
+    type: Literal["reasoning"] = "reasoning"
+    id: str | None = None
+    text: str | None = None
+    encrypted_content: str | None = None
+    signature: str | None = None
+
+
+class ToolCallOutputItem(AssistantMessage):
+    type: Literal["tool_call"] = "tool_call"
+    call_id: str
+    name: str
+    arguments: str
+
 
 class Usage(BaseModel):
     input_tokens: int
@@ -36,28 +55,6 @@ class Usage(BaseModel):
     cached_input_tokens: int | None = None
     cache_write_input_tokens: int | None = None
     reasoning_tokens: int | None = None
-
-class ReasoningOutputItem(OutputItem):
-    type: Literal["reasoning"] = "reasoning"
-    id: str | None = None
-    text: str | None = None
-    encrypted_content: str | None = None
-    signature: str | None = None
-
-
-class ToolCallOutputItem(OutputItem):
-    type: Literal["tool_call"] = "tool_call"
-    call_id: str
-    name: str
-    arguments: str
-
-class ProviderOutputItem(OutputItem):
-    type: Literal["provider_output"] = "provider_output"
-    provider: Provider
-    provider_item_type: str
-    data: dict[str, Any]
-
-OutputItemUnion: TypeAlias = (TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem)
 
 class IncompleteDetails(BaseModel):
     reason: str
@@ -78,6 +75,3 @@ class ResponseTelemetry(BaseModel):
         repr=False,
     )
 
-class AssistantMessage(Message):
-    role: Literal["assistant"] = "assistant"
-    content: list[TextOutputItem | ReasoningOutputItem | ToolCallOutputItem | ProviderOutputItem]

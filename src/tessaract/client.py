@@ -29,13 +29,6 @@ class Tessaract:
 
         return (model_prefix, model_name)
 
-    def _normalize_output(self, item: AssistantMessage) -> list[Output]:
-        return [
-            Output(content=output_item)
-            for output_item in item.content
-        ]
-
-
     def _normalize_input(self, item: str | UserMessage | ToolCallResult) -> Input | ToolCallResult:
         if isinstance(item, str):
             return Input(role="user", content=item)
@@ -51,20 +44,15 @@ class Tessaract:
         
         raise TypeError(f"Unsupported message type: {type(item).__name__}")
 
-    def flatten(self, items):
-        for item in items:
-            if isinstance(item, list):
-                yield from self.flatten(item)
-            else:
-                yield item
-
     def _build_request_model(
         self,
         model: str,
-        input: list[str | UserMessage | AssistantMessage | ToolCallResult | list],
+        input: list[str | Message],
         reasoning: ReasoningOptions,
         tools: list[FunctionTool],
     ) -> Request:
+
+        """
         all_items = self.flatten(input)
 
         normalized_list = []
@@ -74,18 +62,30 @@ class Tessaract:
                 normalized_list.extend(self._normalize_output(item))
             else:
                 normalized_list.append(self._normalize_input(item))
+        """
+        
+        if isinstance(input, str):
+            input = [UserMessage(content=input)]
+
+        all_items = []
+
+        for message in input:
+            if isinstance(message, AssistantMessage):
+                all_items.append(message.raw)
+            elif isinstance(message, UserMessage):
+                all_items.append(message.raw(self.adapters[model]))
 
 
         return Request(
             model=model,
-            input=normalized_list,
+            input=all_items,
             reasoning=reasoning,
             tools=tools,
         )
 
     def send(
             self, model: str, 
-            input: list[str | UserMessage | AssistantMessage],
+            input: list[str | Message],
             reasoning: ReasoningOptions | None = None,
             tools: list[FunctionTool] | None = None
         ) -> Response | None:

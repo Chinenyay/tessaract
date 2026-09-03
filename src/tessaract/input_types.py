@@ -50,5 +50,12 @@ class UserMessage(Message):
     role: Literal["user"] = "user"
     content: str | Text | File | Audio | Image | ToolCallResult
 
+    def raw(self, adapter: Any):
+
+        return {
+            "role": self.role,
+            "content": self.content
+        }
+
 
 

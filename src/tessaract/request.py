@@ -7,16 +7,8 @@ from pydantic import BaseModel, Field
 from .input_types import InputItemUnion, ToolCallResult
 from .tools.function import FunctionTool
 from .types import Provider, Role
-from .output_types import OutputItemUnion
+from .output_types import Message
 
-
-class Input(BaseModel):
-    role: Role
-    content: InputItemUnion
-
-class Output(BaseModel):
-    role: Role = "assistant"
-    content: OutputItemUnion
 
 class ProviderRequestOptions(BaseModel):
     type: Literal["provider_request"] = "provider_request"
@@ -41,7 +33,7 @@ class Request(BaseModel):
     '''
     model: str
     instructions: str | None = None
-    input: list[Input | Output | ToolCallResult]
+    input: list[Any]
     tools: list[FunctionTool] | None = None
     reasoning:  ReasoningOptions | None = None
     stream: bool = False

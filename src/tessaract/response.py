@@ -4,7 +4,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from .output_types import OutputItem, TextOutputItem, Usage, AssistantMessage, OutputItemUnion
-from .types import FinishDetails, Provider, ResponseTelemetry
+from .types import Message, FinishDetails, Provider, ResponseTelemetry
 
 
 class ResponseStatus(str, Enum):
@@ -41,11 +41,11 @@ class Response(BaseModel):
     )
 
     id: str
-    provider: Provider
+    provider: Provider 
     model: str
     status: ResponseStatus
 
-    output: list[OutputItemUnion] = Field(
+    outputs: list[Message] = Field(
         default_factory=list,
     )
 
@@ -71,17 +71,13 @@ class Response(BaseModel):
     def output_text(self) -> str:
         return "".join(
             item.text
-            for item in self.output
+            for item in self.outputs
             if isinstance(item, TextOutputItem)
         )
 
     @property
     def response_id(self) -> str:
         return self.id
-
-    @property
-    def message(self):
-        return AssistantMessage(content=self.output)
 
 class OpenAIResponse(Response):
     provider: Literal["openai"] = "openai"

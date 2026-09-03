@@ -162,7 +162,7 @@ class OpenAIAdapter:
     def generate_sync(self, request: Request):
         _raw_response = self._client.responses.create(
             model=request.model,
-            input=self.build_input(request=request),
+            input=request.input,
             tools=self._native_tools(request.tools),
             reasoning=self._native_reasoning_params(request.reasoning) 
         )

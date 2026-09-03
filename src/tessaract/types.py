@@ -16,7 +16,7 @@ class OutputItem(BaseModel):
     )
 
 class Message(BaseModel):
-    pass
+    role: str
 
 class FinishReason(str, Enum):
     COMPLETED = "completed"
