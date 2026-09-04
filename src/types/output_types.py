@@ -21,7 +21,7 @@ class Annotation(BaseModel):
     )
 
 
-class AssistantMessage(Message):
+class AssistantMessage(BaseModel):
     role: Literal["assistant"] = "assistant"
     raw: Any 
 

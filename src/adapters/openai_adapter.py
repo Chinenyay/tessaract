@@ -31,7 +31,8 @@ class OpenAIAdapter(Adapter):
                     if isinstance(item, ResponseOutputText):
                         tessaract_output_text=TextOutputItem(
                             text=item.text,
-                            annotations=item.annotations
+                            annotations=item.annotations,
+                            raw=item
                         )
                         
                         _output_list.append(tessaract_output_text)
