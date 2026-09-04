@@ -4,10 +4,9 @@ from typing_extensions import Protocol
 from pydantic import BaseModel
 
 
-class Message(BaseModel):
-    raw: Any
+class Message(Protocol):
+    ...
 
-class InputMessageProtocol(Protocol):
-    role: str
+class UserMessageProtocol(Protocol):
+    role: Literal["user"] = "user"
     content: str | list[dict]
-

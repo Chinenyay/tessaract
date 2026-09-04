@@ -21,4 +21,3 @@ class Provider:
     def client(self):
         raise NotImplementedError("not yet implemented")
 
-    def map_input_message(self):

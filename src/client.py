@@ -1,6 +1,10 @@
+from typing import cast
+
 from .providers import OpenAIProvider
-from .adapters import OpenAIAdapter
-from .types import Request
+from .adapters.openai_adapter import OpenAIAdapter
+from .types.input_types import InputType, UserMessage
+from .types.response import Response
+from .types.request import Request
 
 class Tessaract:
     def __init__(self, providers: dict[str, OpenAIProvider]):
@@ -23,23 +27,64 @@ class Tessaract:
 
         return (model_prefix, model_name)
 
-   def send(
+    def _build_request_model(
+        self,
+        model: str,
+        provider: str,
+        input: str | list[str | InputType]
+        # reasoning: ReasoningOptions,
+        # tools: list[FunctionTool],
+    ) -> Request:
+
+        all_items = []
+
+        """
+        all_items = self.flatten(input)
+
+        normalized_list = []
+
+        for item in all_items:
+            if isinstance(item, AssistantMessage):
+                normalized_list.extend(self._normalize_output(item))
+            else:
+                normalized_list.append(self._normalize_input(item))
+        """
+        
+        if isinstance(input, str):
+            converted_item = UserMessage(content=input)
+            all_items.append(converted_item.raw(self.adapters[provider]))
+
+        for message in input:
+            if isinstance(message, InputType):
+                all_items.append(message.raw(self.adapters[provider]))
+
+
+        return Request(
+            model=model,
+            input=all_items,
+            # reasoning=reasoning,
+            # tools=tools,
+        )
+
+
+
+    def send(
             self, model: str, 
-            input: list[str | UserMessage | AssistantMessage],
-            reasoning: ReasoningOptions | None = None,
-            tools: list[FunctionTool] | None = None
+            input: str | list[str | InputType],
+            # reasoning: ReasoningOptions | None = None,
+            # tools: list[FunctionTool] | None = None
         ) -> Response | None:
 
-        model_prefix, model_name = self._normalize_model_name(model=model)
+        provider, model = self._normalize_model_name(model=model)
 
-        if model_prefix not in self.providers:
+        if provider not in self.providers:
             raise ValueError("provider prefix must match registered provider in tessaract object")
 
-        _request_provider = self.providers[model_prefix]
+        _request_provider = self.providers[provider]
 
-        _tools = tools if tools is not None else []
+        # _tools = tools if tools is not None else []
 
-        _tessaract_request = self._build_request_model(model=model_name, input=input, reasoning=reasoning, tools=_tools)
+        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider)
 
         _api_key = _request_provider.api_key
 
@@ -48,7 +93,7 @@ class Tessaract:
         
         if isinstance(_request_provider, OpenAIProvider):
 
-            adapter = self.adapters[model_prefix]
+            adapter = self.adapters[provider]
 
             _response = adapter.generate_sync(request=_tessaract_request)
             return cast(Response, _response)

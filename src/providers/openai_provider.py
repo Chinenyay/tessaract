@@ -6,7 +6,7 @@ from .provider import Provider
 
 
 class OpenAIProvider(Provider):
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         self._client = OpenAI(api_key=self.api_key, **self.provider_args)
 
     @property

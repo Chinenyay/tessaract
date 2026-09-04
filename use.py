@@ -1,3 +1,11 @@
+import os
+
+from dotenv import load_dotenv
+
+from src.client import Tessaract
+from src.providers.openai_provider import OpenAIProvider
+
+load_dotenv()
 client = Tessaract(
     {
         "oai": OpenAIProvider(
