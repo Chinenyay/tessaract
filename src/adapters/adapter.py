@@ -1,9 +1,9 @@
 from typing import Any, Literal
+
 from typing_extensions import Protocol
 
-from pydantic import BaseModel
-
 from ..providers.provider import Provider
+
 #from ..types.types import UserMessageProtocol
 
 class UserMessageProtocol(Protocol):

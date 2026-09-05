@@ -4,11 +4,12 @@ from openai.types.responses import (
 )
 
 from ..providers.openai_provider import OpenAIProvider
-from .adapter import Adapter
-from ..types.types import UserMessageProtocol
+from ..types.output_types import TextOutputItem
 from ..types.request import Request
 from ..types.response import OpenAIResponse
-from ..types.output_types import TextOutputItem
+from ..types.types import UserMessageProtocol
+from .adapter import Adapter
+
 
 class OpenAIAdapter(Adapter):
     def __init__(self, provider: OpenAIProvider):

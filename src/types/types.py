@@ -1,7 +1,6 @@
-from typing import Any, Literal
-from typing_extensions import Protocol
+from typing import Literal
 
-from pydantic import BaseModel
+from typing_extensions import Protocol
 
 
 class Message(Protocol):

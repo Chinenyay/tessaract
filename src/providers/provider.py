@@ -1,5 +1,3 @@
-from typing_extensions import Protocol
-
 from dataclasses import dataclass, field
 
 

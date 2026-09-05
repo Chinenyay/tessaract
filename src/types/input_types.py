@@ -1,6 +1,7 @@
 from typing import Any, Literal
 
 from pydantic import BaseModel
+
 from ..adapters.adapter import Adapter
 
 

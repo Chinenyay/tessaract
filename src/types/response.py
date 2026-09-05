@@ -1,9 +1,10 @@
-from typing import Any, Literal
-
 from dataclasses import dataclass, field
-from ..providers.provider import Provider
+from typing import Any
+
 from ..providers.openai_provider import OpenAIProvider
+from ..providers.provider import Provider
 from ..types import Message, TextOutputItem
+
 
 @dataclass
 class Response:

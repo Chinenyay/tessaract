@@ -1,10 +1,12 @@
 from typing import cast
 
-from .providers import OpenAIProvider
 from .adapters.openai_adapter import OpenAIAdapter
+from .providers import OpenAIProvider
 from .types.input_types import InputType, UserMessage
-from .types.response import Response
+from .types.output_types import AssistantMessage
 from .types.request import Request
+from .types.response import Response
+
 
 class Tessaract:
     def __init__(self, providers: dict[str, OpenAIProvider]):
@@ -55,8 +57,15 @@ class Tessaract:
             all_items.append(converted_item.raw(self.adapters[provider]))
 
         for message in input:
+            if isinstance(message, str):
+                converted_item = UserMessage(content=message)
+                all_items.append(converted_item.raw(self.adapters[provider]))
+                
             if isinstance(message, InputType):
                 all_items.append(message.raw(self.adapters[provider]))
+
+            if isinstance(message, AssistantMessage):
+                all_items.append(message.raw)
 
 
         return Request(
@@ -65,8 +74,6 @@ class Tessaract:
             # reasoning=reasoning,
             # tools=tools,
         )
-
-
 
     def send(
             self, model: str, 

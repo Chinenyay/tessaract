@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 
 from ..providers.provider import Provider
 
-from .types import Message
 
 class Annotation(BaseModel):
     type: Literal["citation"] = "citation"
@@ -23,7 +22,7 @@ class Annotation(BaseModel):
 
 class AssistantMessage(BaseModel):
     role: Literal["assistant"] = "assistant"
-    raw: Any 
+    raw: Any
 
 
 class TextOutputItem(AssistantMessage):
