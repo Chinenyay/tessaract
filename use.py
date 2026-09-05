@@ -15,8 +15,6 @@ client = Tessaract(
     }
 )
 
-
-
 def run_agent_turn(history: list, input):
 
     history.append(input)
@@ -43,8 +41,10 @@ def main():
 
         if _input == "exit()":
             break
-        
+
         history.append(_input)
+
         run_agent_turn(history=history, input=_input)
 
-main()
+if __name__ == "__main__":
+    main()

@@ -19,7 +19,6 @@ class Annotation(BaseModel):
         default_factory=dict,
     )
 
-
 class AssistantMessage(BaseModel):
     role: Literal["assistant"] = "assistant"
     raw: Any
@@ -31,3 +30,10 @@ class TextOutputItem(AssistantMessage):
     annotations: list[Annotation] = Field(
         default_factory=list,
     )
+
+class OutputType(BaseModel):
+    raw: Any
+
+class ReasoningOutputItem(OutputType):
+    type: Literal["reasoning"] = "reasoning"
+    text: str | None = None

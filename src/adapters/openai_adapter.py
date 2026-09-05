@@ -1,10 +1,11 @@
 from openai.types.responses import (
     ResponseOutputMessage,
     ResponseOutputText,
+    ResponseReasoningItem
 )
 
 from ..providers.openai_provider import OpenAIProvider
-from ..types.output_types import TextOutputItem
+from ..types.output_types import TextOutputItem, ReasoningOutputItem
 from ..types.request import Request
 from ..types.response import OpenAIResponse
 from ..types.types import UserMessageProtocol
@@ -35,8 +36,15 @@ class OpenAIAdapter(Adapter):
                             annotations=item.annotations,
                             raw=item
                         )
-                        
                         _output_list.append(tessaract_output_text)
+
+                    if isinstance(item, ResponseReasoningItem):
+                        tessaract_reasoning_text=ReasoningOutputItem(
+                            raw=item,
+                            text="\n".join(summary.text for summary in item.summary)
+                        )
+                        _output_list.append(tessaract_reasoning_text)
+
         return _output_list
 
     def generate_sync(self, request: Request):
