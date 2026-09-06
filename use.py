@@ -5,8 +5,10 @@ from dotenv import load_dotenv
 from src.client import Tessaract
 from src.providers.openai_provider import OpenAIProvider
 from src.types.input_types import UserMessage
+from src.types.request import ReasoningOptions
 
 load_dotenv()
+
 client = Tessaract(
     {
         "oai": OpenAIProvider(
@@ -23,12 +25,19 @@ def run_agent_turn(history: list, input):
 
     response = client.send(
         model=model,
-        input=history
+        input=history,
+        reasoning=ReasoningOptions(
+            effort="high",
+            summary="detailed"
+        )
     )
 
     history.append(response.output)
 
-    print(f"\n{response.output_text}\n")
+    print(f"\n Thinking... {response.reasoning}")
+
+    print(f"\n Answering... {response.output_text}\n")
+    # print(response.raw_response)
 
 def main():
     print("Hello, this is your assistant. Type your message here...")

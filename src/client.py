@@ -4,7 +4,7 @@ from .adapters.openai_adapter import OpenAIAdapter
 from .providers import OpenAIProvider
 from .types.input_types import InputType, UserMessage
 from .types.output_types import AssistantMessage
-from .types.request import Request
+from .types.request import Request, ReasoningOptions
 from .types.response import Response
 
 
@@ -33,8 +33,8 @@ class Tessaract:
         self,
         model: str,
         provider: str,
-        input: str | list[str | InputType]
-        # reasoning: ReasoningOptions,
+        input: str | list[str | InputType],
+        reasoning: ReasoningOptions,
         # tools: list[FunctionTool],
     ) -> Request:
 
@@ -71,14 +71,14 @@ class Tessaract:
         return Request(
             model=model,
             input=all_items,
-            # reasoning=reasoning,
+            reasoning=reasoning,
             # tools=tools,
         )
 
     def send(
             self, model: str, 
             input: str | list[str | InputType],
-            # reasoning: ReasoningOptions | None = None,
+            reasoning: ReasoningOptions | None = None,
             # tools: list[FunctionTool] | None = None
         ) -> Response | None:
 
@@ -91,7 +91,7 @@ class Tessaract:
 
         # _tools = tools if tools is not None else []
 
-        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider)
+        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=reasoning)
 
         _api_key = _request_provider.api_key
 

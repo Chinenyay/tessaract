@@ -11,3 +11,4 @@ wheels/
 .env
 /rough
 .vscode/
+.inspect_reasoning.py
