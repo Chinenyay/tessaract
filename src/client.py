@@ -6,6 +6,7 @@ from .types.input_types import InputType, UserMessage
 from .types.output_types import AssistantMessage
 from .types.request import Request, ReasoningOptions
 from .types.response import Response
+from .tools.function import FunctionTool
 
 
 class Tessaract:
@@ -35,22 +36,10 @@ class Tessaract:
         provider: str,
         input: str | list[str | InputType],
         reasoning: ReasoningOptions,
-        # tools: list[FunctionTool],
+        tools: list[FunctionTool],
     ) -> Request:
 
         all_items = []
-
-        """
-        all_items = self.flatten(input)
-
-        normalized_list = []
-
-        for item in all_items:
-            if isinstance(item, AssistantMessage):
-                normalized_list.extend(self._normalize_output(item))
-            else:
-                normalized_list.append(self._normalize_input(item))
-        """
         
         if isinstance(input, str):
             converted_item = UserMessage(content=input)
@@ -72,14 +61,14 @@ class Tessaract:
             model=model,
             input=all_items,
             reasoning=reasoning,
-            # tools=tools,
+            tools=tools,
         )
 
     def send(
             self, model: str, 
             input: str | list[str | InputType],
             reasoning: ReasoningOptions | None = None,
-            # tools: list[FunctionTool] | None = None
+            tools: list[FunctionTool] | None = None
         ) -> Response | None:
 
         provider, model = self._normalize_model_name(model=model)
@@ -89,9 +78,9 @@ class Tessaract:
 
         _request_provider = self.providers[provider]
 
-        # _tools = tools if tools is not None else []
+        _tools = tools if tools is not None else []
 
-        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=reasoning)
+        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=reasoning, tools=_tools)
 
         _api_key = _request_provider.api_key
 

@@ -15,3 +15,13 @@ class UserMessage(InputType):
 
     def raw(self, adapter: Adapter):
         return adapter.map_input_message(self)
+
+class ToolResult(InputType):
+    type: Literal["tool_result"] = "tool_result"
+    call_id: str
+    result: Any
+    is_error: bool = False
+
+    def raw(self, adapter: Adapter):
+        return adapter.map_tool_result(self)
+

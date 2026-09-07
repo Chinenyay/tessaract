@@ -2,9 +2,13 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from ..tools.function import FunctionTool
+
 
 class ReasoningOptions(BaseModel):
-    effort: Literal["minimal", "low", "medium", "high", "extra_high", "max"] | None = None
+    effort: Literal[
+        "none", "minimal", "low", "medium", "high", "extra_high", "max"
+    ] | None = None
     summary: Literal["concise", "auto", "detailed"] | None = None
     mode: Literal["standard", "pro"] | None = None
 
@@ -22,7 +26,7 @@ class Request(BaseModel):
     model: str
     instructions: str | None = None
     input: list
-    # tools: list[FunctionTool] | None = None
+    tools: list[FunctionTool] | None = None
     reasoning:  ReasoningOptions | None = None
     stream: bool = False
     # provider_options: ProviderRequestOptions | None = None
