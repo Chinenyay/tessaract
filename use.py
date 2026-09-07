@@ -32,8 +32,10 @@ weather_tool = FunctionTool(
                 type="string"
             ),
         },
-        required=["city"]
-    )
+        required=["city"],
+        additionalProperties=False
+    ),
+    strict=True
 )
 
 TOOLS = [weather_tool]

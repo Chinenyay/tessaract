@@ -85,7 +85,7 @@ class OpenAIAdapter(Adapter):
             "type": input_schema.type,
             "properties": _properties,
             "required": input_schema.required,
-            "additionalProperties": input_schema.additionalProperties
+            "additionalProperties": input_schema.additionalProperties if not None else False
         }
 
     def _native_tools(self, tools: list[FunctionTool]):
