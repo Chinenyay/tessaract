@@ -15,6 +15,16 @@ class ToolResultProtocol(Protocol):
     result: Any
     is_error: bool = False
 
+class FunctionCallProtocol(Protocol):
+    type: Literal["tool_call"] = "tool_call"
+    call_id: str
+    name: str
+    arguments: str
+
+class ReasoningProtocol(Protocol):
+    type: Literal["reasoning"] = "reasoning"
+    text: str | None = None
+
 class Adapter:
     def __init__(self, provider: Provider):
         self._provider = provider
@@ -24,3 +34,10 @@ class Adapter:
 
     def map_tool_result(self, item: ToolResultProtocol) -> Any:
         raise NotImplementedError("not yet implemented...")
+
+    def map_function_call(self, item: FunctionCallProtocol) -> Any:
+        raise NotImplementedError("not yet implemented...")
+
+    def map_reasoning(self, item: ReasoningProtocol) -> Any:
+        raise NotImplementedError("not yet implemented")
+

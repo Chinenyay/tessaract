@@ -1,15 +1,18 @@
 from openai.types.responses import (
     ResponseOutputMessage,
     ResponseOutputText,
-    ResponseReasoningItem
+    ResponseReasoningItem,
+    ResponseFunctionToolCall,
+    ResponseOutputItem
 )
 
 from ..providers.openai_provider import OpenAIProvider
-from ..types.output_types import TextOutputItem, ReasoningOutputItem
+from ..types.output_types import TextOutputItem, ReasoningOutputItem, ToolCallOutputItem, AssistantMessage
+from ..types.types import OutputItem
 from ..types.request import Request, ReasoningOptions
 from ..types.response import OpenAIResponse
 from ..tools.function import InputSchema, FunctionTool
-from .adapter import Adapter, UserMessageProtocol, ToolResultProtocol
+from .adapter import Adapter, UserMessageProtocol, ToolResultProtocol, FunctionCallProtocol, ReasoningProtocol
 
 
 class OpenAIAdapter(Adapter):
@@ -23,34 +26,46 @@ class OpenAIAdapter(Adapter):
             "content": item.content
         }
 
-    def map_tool_result(self, item: ToolResultProtocol):
-        return {
-            "type": "function_call_output",
-            "call_id": item.call_id,
-            "output": item.result
-        }
+    # def map_tool_result(self, item: ToolResultProtocol):
+    #     return {
+    #         "type": "function_call_output",
+    #         "call_id": item.call_id,
+    #         "output": item.result
+    #     }
+
+    # def map_function_call(self, item: FunctionCallProtocol):
+    #     return {
+    #         "type": "function_call",
+    #         "call_id": item.call_id,
+    #         "name": item.name,
+    #         "arguments": item.arguments
+    #     }
 
     def _normalize_output(self, output_items):
         _output_list = []
 
         for item in output_items:
-            if isinstance(item, ResponseOutputMessage):
-                content = item.content
-                for item in content:
-                    if isinstance(item, ResponseOutputText):
-                        tessaract_output_text=TextOutputItem(
-                            text=item.text,
-                            annotations=item.annotations,
-                            raw=item
-                        )
-                        _output_list.append(tessaract_output_text)
 
-            elif isinstance(item, ResponseReasoningItem):
-                tessaract_reasoning_text=ReasoningOutputItem(
-                    raw=item,
-                    text="\n".join(summary.text for summary in item.summary)
+            if item.type == "message":
+                _output_list.append(
+                    AssistantMessage(
+                        raw=item,
+                        content=item.content,
+                    )
                 )
-                _output_list.append(tessaract_reasoning_text)
+
+            elif item.type == "reasoning":
+                ReasoningOutputItem(
+                    raw=item
+                )
+
+            elif item.type == "function_call":
+                ToolCallOutputItem(
+                    raw=item,
+                    call_id=item.call_id,
+                    name=item.name,
+                    arguments=item.arguments
+                )
 
         return _output_list
 

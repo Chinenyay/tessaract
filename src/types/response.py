@@ -3,7 +3,7 @@ from typing import Any
 
 from ..providers.openai_provider import OpenAIProvider
 from ..providers.provider import Provider
-from ..types.types import Message
+from ..types.types import OutputItem
 from ..types.output_types import ReasoningOutputItem, TextOutputItem
 
 
@@ -14,7 +14,7 @@ class Response:
     model: str
     # status: ResponseStatus
 
-    output: list[Message] = field(
+    output: list[OutputItem] = field(
         default_factory=list,
     )
 
@@ -38,7 +38,7 @@ class Response:
     @property
     def output_text(self) -> str:
         return "".join(
-            item.text
+            item.content.text
             for item in self.output
             if isinstance(item, TextOutputItem)
         )

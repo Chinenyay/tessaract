@@ -20,7 +20,10 @@ client = Tessaract(
 )
 
 def get_weather(city: str):
-    return {city: "sunny 19C"}
+    normalize_city = city.lower()
+    fake_dict = {"paris": "sunny 19C", "amsterdam": "rainy 14C"}
+
+    return fake_dict.get(normalize_city, f"Unable to find weather for {city}")
 
 weather_tool = FunctionTool(
     name="get_weather",
@@ -43,9 +46,6 @@ TOOLS = [weather_tool]
 TOOL_MAP = {"get_weather": get_weather}
 
 def run_agent_turn(history: list, input):
-
-    history.append(input)
-
     model="oai/gpt-5.6-luna"
 
     response = client.send(
@@ -58,7 +58,7 @@ def run_agent_turn(history: list, input):
         )
     )
 
-    history.append(response.output)
+    history.extend(response.output)
 
     for item in response.output:
         if item.type == "tool_call":
@@ -77,11 +77,20 @@ def run_agent_turn(history: list, input):
 
             history.append(result_schema)
 
-        else:
-            print(f"\n Thinking... {response.reasoning}")
+            response = client.send(
+                model=model,
+                input=history,
+                tools=TOOLS,
+                reasoning=ReasoningOptions(
+                    effort="high",
+                    summary="detailed"
+                )
+            )
 
-            print(f"\n Answering... {response.output_text}\n")
-    # print(response.raw_response)
+    # print(f"\n Thinking... {response.reasoning}")
+
+    # print(f"\n Answering... {response.output_text}\n")
+            print(response.output)
 
 def main():
     print("Hello, this is your assistant. Type your message here...")

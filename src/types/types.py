@@ -1,7 +1,7 @@
-from typing import Literal
+from typing import Any
 
-from typing_extensions import Protocol
+from pydantic import BaseModel
 
 
-class Message(Protocol):
-    ...
+class OutputItem(BaseModel):
+    raw: Any

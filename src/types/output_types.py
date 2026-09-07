@@ -4,6 +4,9 @@ from pydantic import BaseModel, Field
 
 from ..providers.provider import Provider
 
+from ..adapters.adapter import Adapter
+
+from ..types.types import OutputItem
 
 class Annotation(BaseModel):
     type: Literal["citation"] = "citation"
@@ -21,19 +24,25 @@ class Annotation(BaseModel):
 
 class AssistantMessage(BaseModel):
     role: Literal["assistant"] = "assistant"
+    content: Any
     raw: Any
 
-
-class TextOutputItem(AssistantMessage):
+class TextOutputItem(OutputItem):
     type: Literal["text"] = "text"
-    text: str
+    content: list
     annotations: list[Annotation] = Field(
         default_factory=list,
     )
 
-class OutputType(BaseModel):
-    raw: Any
+# class OutputType(BaseModel):
+#     raw: Any
 
-class ReasoningOutputItem(OutputType):
+class ReasoningOutputItem(OutputItem):
     type: Literal["reasoning"] = "reasoning"
-    text: str | None = None
+
+
+class ToolCallOutputItem(OutputItem):
+    type: Literal["tool_call"] = "tool_call"
+    call_id: str
+    name: str
+    arguments: str
