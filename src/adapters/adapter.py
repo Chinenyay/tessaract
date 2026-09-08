@@ -21,6 +21,11 @@ class FunctionCallProtocol(Protocol):
     name: str
     arguments: str
 
+class ReasoningParamsProtocol(Protocol):
+    effort: Literal["none", "minimal", "low", "medium", "high", "extra_high", "max"] | None = None
+    summary: Literal["concise", "auto", "detailed"] | None = None
+    mode: Literal["standard", "pro"] | None = None
+
 class ReasoningProtocol(Protocol):
     type: Literal["reasoning"] = "reasoning"
     text: str | None = None
@@ -38,6 +43,9 @@ class Adapter:
     def map_function_call(self, item: FunctionCallProtocol) -> Any:
         raise NotImplementedError("not yet implemented...")
 
+    def map_reasoning_params(self, item: ReasoningParamsProtocol) -> Any:
+        raise NotImplementedError("not yet implemented...")
+    
     def map_reasoning(self, item: ReasoningProtocol) -> Any:
         raise NotImplementedError("not yet implemented")
 

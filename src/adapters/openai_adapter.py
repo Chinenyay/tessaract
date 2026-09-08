@@ -3,8 +3,11 @@ from openai.types.responses import (
     ResponseOutputText,
     ResponseReasoningItem,
     ResponseFunctionToolCall,
-    ResponseOutputItem
+    ResponseOutputItem,
 )
+
+from openai import Omit
+from openai.types import Reasoning
 
 from ..providers.openai_provider import OpenAIProvider
 from ..types.output_types import TextOutputItem, ReasoningOutputItem, ToolCallOutputItem, AssistantMessage
@@ -12,7 +15,7 @@ from ..types.types import OutputItem
 from ..types.request import Request, ReasoningOptions
 from ..types.response import OpenAIResponse
 from ..tools.function import InputSchema, FunctionTool
-from .adapter import Adapter, UserMessageProtocol, ToolResultProtocol, FunctionCallProtocol, ReasoningProtocol
+from .adapter import Adapter, UserMessageProtocol, ReasoningParamsProtocol
 
 
 class OpenAIAdapter(Adapter):
@@ -26,20 +29,24 @@ class OpenAIAdapter(Adapter):
             "content": item.content
         }
 
-    # def map_tool_result(self, item: ToolResultProtocol):
-    #     return {
-    #         "type": "function_call_output",
-    #         "call_id": item.call_id,
-    #         "output": item.result
-    #     }
+    def map_reasoning_params(self, reasoning: ReasoningParamsProtocol) -> Reasoning | Omit:
+        if reasoning is None:
+            return Omit()
 
-    # def map_function_call(self, item: FunctionCallProtocol):
-    #     return {
-    #         "type": "function_call",
-    #         "call_id": item.call_id,
-    #         "name": item.name,
-    #         "arguments": item.arguments
-    #     }
+        native_reasoning = Reasoning()
+
+        if reasoning.mode is not None:
+            native_reasoning.mode = reasoning.mode
+
+        if reasoning.summary is not None:
+            native_reasoning.summary = reasoning.summary
+
+        if reasoning.effort is not None:
+            native_reasoning.effort = (
+                "xhigh" if reasoning.effort == "extra_high" else reasoning.effort
+            )
+
+        return native_reasoning
 
     def _normalize_output(self, output_items):
         _output_list = []
@@ -55,38 +62,27 @@ class OpenAIAdapter(Adapter):
                 )
 
             elif item.type == "reasoning":
-                ReasoningOutputItem(
-                    raw=item
+                _output_list.append(
+                    ReasoningOutputItem(
+                        raw=item,
+                        id=item.id,
+                        text=item.content
+                    )
                 )
+                
 
             elif item.type == "function_call":
-                ToolCallOutputItem(
-                    raw=item,
-                    call_id=item.call_id,
-                    name=item.name,
-                    arguments=item.arguments
+                _output_list.append(
+                    ToolCallOutputItem(
+                        raw=item,
+                        call_id=item.call_id,
+                        name=item.name,
+                        arguments=item.arguments
+                    )
                 )
 
         return _output_list
 
-    def _native_reasoning_params(self, reasoning: ReasoningOptions | None = None):
-        if reasoning is None:
-            return None
-
-        _reasoning_params: dict[str, str] = {}
-
-        if reasoning.mode is not None:
-            _reasoning_params["mode"] = reasoning.mode
-
-        if reasoning.summary is not None:
-            _reasoning_params["summary"] = reasoning.summary
-
-        if reasoning.effort is not None:
-            _reasoning_params["effort"] = (
-                "xhigh" if reasoning.effort == "extra_high" else reasoning.effort
-            )
-
-        return _reasoning_params
 
     def _native_tool_parameters(self, input_schema: InputSchema):
         _properties = {}
@@ -122,7 +118,7 @@ class OpenAIAdapter(Adapter):
             model=request.model,
             input=request.input,
             tools=self._native_tools(request.tools),
-            reasoning=self._native_reasoning_params(request.reasoning)
+            reasoning=self.map_reasoning_params(request.reasoning)
         )
 
         response = OpenAIResponse(

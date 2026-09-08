@@ -39,7 +39,8 @@ class TextOutputItem(OutputItem):
 
 class ReasoningOutputItem(OutputItem):
     type: Literal["reasoning"] = "reasoning"
-
+    id: str | None = None
+    text: str | list | None = None
 
 class ToolCallOutputItem(OutputItem):
     type: Literal["tool_call"] = "tool_call"
