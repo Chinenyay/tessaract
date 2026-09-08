@@ -4,16 +4,25 @@ from typing_extensions import Protocol
 
 from ..providers.provider import Provider
 
+from ..tools.function import InputSchema
+
 
 class UserMessageProtocol(Protocol):
     role: Literal["user"] = "user"
     content: str | list[dict]
 
-class ToolResultProtocol(Protocol):
-    type: Literal["tool_result"] = "tool_result"
+class FunctionToolResultProtocol(Protocol):
+    type: Literal["function_tool_result"] = "function_tool_result"
     call_id: str
     result: Any
     is_error: bool = False
+
+class FunctionToolSchemaProtocol(Protocol):
+    name: str
+    description: str
+    input_schema: InputSchema
+    strict: bool | None = None
+    # add a payload for non-common fields, like anthropic tool_examples
 
 class FunctionCallProtocol(Protocol):
     type: Literal["tool_call"] = "tool_call"
@@ -37,7 +46,10 @@ class Adapter:
     def map_input_message(self, item: UserMessageProtocol) -> Any:
         raise NotImplementedError("not yet implemented...")
 
-    def map_tool_result(self, item: ToolResultProtocol) -> Any:
+    def map_tool_result(self, item: FunctionToolResultProtocol) -> Any:
+        raise NotImplementedError("not yet implemented...")
+
+    def map_function_schema(self, tools: list[FunctionToolSchemaProtocol]) -> list:
         raise NotImplementedError("not yet implemented...")
 
     def map_function_call(self, item: FunctionCallProtocol) -> Any:
