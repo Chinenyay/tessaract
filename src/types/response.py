@@ -4,7 +4,7 @@ from typing import Any
 from ..providers.openai_provider import OpenAIProvider
 from ..providers.provider import Provider
 from ..types.types import OutputItem
-from ..types.output_types import ReasoningOutputItem, TextOutputItem
+from ..types.output_types import ReasoningOutputItem, TextOutputItem, AssistantMessage
 
 
 @dataclass
@@ -38,20 +38,24 @@ class Response:
     @property
     def output_text(self) -> str:
         return "".join(
-            item.content.text
+            block.text
             for item in self.output
+            if isinstance(item, AssistantMessage)
+            for block in item.content
             if isinstance(item, TextOutputItem)
         )
 
-    @property
-    def reasoning(self) -> str:
-        return "".join(
-            item.text
-            for item in self.output
-            if isinstance(item, ReasoningOutputItem)
-            and item.text is not None
-        )
-    
+    # @property
+    # def reasoning(self) -> str:
+    #     reasoning_text = "".join(
+            
+    #     )
+
+# class ReasoningOutputItem(OutputItem):
+#     type: Literal["reasoning"] = "reasoning"
+#     id: str | None = None
+#     text: str | list | None = None
+#     content: list | None = None
     @property
     def response_id(self) -> str:
         return self.id

@@ -22,17 +22,19 @@ class Annotation(BaseModel):
         default_factory=dict,
     )
 
-class AssistantMessage(BaseModel):
-    role: Literal["assistant"] = "assistant"
-    content: Any
-    raw: Any
-
 class TextOutputItem(OutputItem):
     type: Literal["text"] = "text"
-    content: list
+    text: str
     annotations: list[Annotation] = Field(
         default_factory=list,
     )
+
+class AssistantMessage(BaseModel):
+    role: Literal["assistant"] = "assistant"
+    content: list[TextOutputItem]
+    raw: Any
+
+
 
 # class OutputType(BaseModel):
 #     raw: Any
@@ -41,6 +43,7 @@ class ReasoningOutputItem(OutputItem):
     type: Literal["reasoning"] = "reasoning"
     id: str | None = None
     text: str | list | None = None
+    content: str | list | None = None
 
 class ToolCallOutputItem(OutputItem):
     type: Literal["tool_call"] = "tool_call"

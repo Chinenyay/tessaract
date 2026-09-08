@@ -57,7 +57,14 @@ class OpenAIAdapter(Adapter):
                 _output_list.append(
                     AssistantMessage(
                         raw=item,
-                        content=item.content,
+                        content=[
+                            TextOutputItem(
+                                raw=i,
+                                text=i.text,
+                                annotations=i.annotations
+                            )
+                            for i in item.content
+                        ]
                     )
                 )
 
@@ -66,7 +73,8 @@ class OpenAIAdapter(Adapter):
                     ReasoningOutputItem(
                         raw=item,
                         id=item.id,
-                        text=item.content
+                        content="".join(part.text for part in item.content),
+                        text="".join(part.text for part in item.summary)
                     )
                 )
                 
