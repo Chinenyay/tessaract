@@ -45,17 +45,6 @@ class Response:
             if isinstance(item, TextOutputItem)
         )
 
-    # @property
-    # def reasoning(self) -> str:
-    #     reasoning_text = "".join(
-            
-    #     )
-
-# class ReasoningOutputItem(OutputItem):
-#     type: Literal["reasoning"] = "reasoning"
-#     id: str | None = None
-#     text: str | list | None = None
-#     content: list | None = None
     @property
     def response_id(self) -> str:
         return self.id

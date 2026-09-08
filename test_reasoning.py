@@ -18,7 +18,7 @@ luna="oai/gpt-5.6-luna"
 
 response = client.send(
     model=luna,
-    input="How would you solve the unified field theory?",
+    input="Explain the Navier-Stokes problem and how to approach solving it.",
     reasoning=ReasoningOptions(
         effort="high",
         summary="detailed"
@@ -26,11 +26,11 @@ response = client.send(
 )
 
 for item in response.output:
-    if isinstance(item, AssistantMessage):
+    if item.type == "assistant_message":
         print("Answering...")
         for block in item.content:
             print(block.text)
-    elif isinstance(item, ReasoningOutputItem):
+    elif item.type == "reasoning":
         print("Thinking...")
         print(item.content or "")
         print(item.text or "")

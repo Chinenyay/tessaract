@@ -52,7 +52,6 @@ class OpenAIAdapter(Adapter):
         _output_list = []
 
         for item in output_items:
-
             if item.type == "message":
                 _output_list.append(
                     AssistantMessage(
@@ -67,7 +66,7 @@ class OpenAIAdapter(Adapter):
                         ]
                     )
                 )
-
+    
             elif item.type == "reasoning":
                 _output_list.append(
                     ReasoningOutputItem(
@@ -78,7 +77,6 @@ class OpenAIAdapter(Adapter):
                     )
                 )
                 
-
             elif item.type == "function_call":
                 _output_list.append(
                     ToolCallOutputItem(
