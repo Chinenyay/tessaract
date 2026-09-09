@@ -3,8 +3,7 @@ from typing import cast
 from .adapters.openai_adapter import OpenAIAdapter
 from .providers import OpenAIProvider
 from .types.input_types import InputType, UserMessage
-from .types.output_types import AssistantMessage
-from .types.types import OutputItem
+from .types.output_types import AssistantMessage, OutputItem
 from .types.request import Request, ReasoningOptions
 from .types.response import Response
 from .tools.function import FunctionTool
@@ -54,8 +53,8 @@ class Tessaract:
             elif isinstance(message, InputType):
                 all_items.append(message.raw(self.adapters[provider]))
 
-            # elif isinstance(message, AssistantMessage):
-            #     all_items.append(message.raw)
+            elif isinstance(message, AssistantMessage):
+                all_items.append(message.raw)
 
             elif isinstance(message, OutputItem):
                 all_items.append(message.raw)

@@ -10,12 +10,11 @@ from openai import Omit
 from openai.types import Reasoning
 
 from ..providers.openai_provider import OpenAIProvider
-from ..types.output_types import TextOutputItem, ReasoningOutputItem, ToolCallOutputItem, AssistantMessage
-from ..types.types import OutputItem
+from ..types.output_types import TextOutputItem, ReasoningOutputItem, FunctionCallOutputItem, AssistantMessage, OutputItem
 from ..types.request import Request, ReasoningOptions
 from ..types.response import OpenAIResponse
 from ..tools.function import InputSchema, FunctionTool
-from .adapter import Adapter, FunctionToolSchemaProtocol, UserMessageProtocol, ReasoningParamsProtocol
+from .adapter import Adapter, FunctionToolSchemaProtocol, UserMessageProtocol, ReasoningParamsProtocol, FunctionToolResultProtocol
 
 
 class OpenAIAdapter(Adapter):
@@ -67,15 +66,25 @@ class OpenAIAdapter(Adapter):
 
         _native_tools_list = []
         for tool in tools:
-            _native_tool_schema = {
-                "type": "function",
-                "name": tool.name,
-                "description": tool.description,
-                "parameters": self._native_tool_parameters(tool.input_schema),
-                "strict": tool.strict if tool.strict is not None else True
-            }
+            _native_tool_schema = {}
+
+            _native_tool_schema["type"] = "function"
+            _native_tool_schema["name"] = tool.name
+            _native_tool_schema["description"] = tool.description
+            _native_tool_schema["strict"] = tool.strict if tool.strict is not None else True
+
+            if tool.input_schema is not None:
+                _native_tool_schema["parameters"] = self._native_tool_parameters(tool.input_schema) if tool.input_schema is not None else None
+
             _native_tools_list.append(_native_tool_schema)
         return _native_tools_list
+
+    def map_tool_result(self, item: FunctionToolResultProtocol):
+        return {
+            "type": "function_call_output",
+            "call_id": item.call_id,
+            "output": item.result
+        }
 
     def _normalize_output(self, output_items):
         _output_list = []
@@ -108,7 +117,7 @@ class OpenAIAdapter(Adapter):
                 
             elif item.type == "function_call":
                 _output_list.append(
-                    ToolCallOutputItem(
+                    FunctionCallOutputItem(
                         raw=item,
                         call_id=item.call_id,
                         name=item.name,

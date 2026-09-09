@@ -24,11 +24,11 @@ class FunctionToolSchemaProtocol(Protocol):
     strict: bool | None = None
     # add a payload for non-common fields, like anthropic tool_examples
 
-class FunctionCallProtocol(Protocol):
-    type: Literal["tool_call"] = "tool_call"
-    call_id: str
-    name: str
-    arguments: str
+# class FunctionCallProtocol(Protocol):
+#     type: Literal["tool_call"] = "tool_call"
+#     call_id: str
+#     name: str
+#     arguments: str
 
 class ReasoningParamsProtocol(Protocol):
     effort: Literal["none", "minimal", "low", "medium", "high", "extra_high", "max"] | None = None
@@ -50,9 +50,6 @@ class Adapter:
         raise NotImplementedError("not yet implemented...")
 
     def map_function_schema(self, tools: list[FunctionToolSchemaProtocol]) -> list:
-        raise NotImplementedError("not yet implemented...")
-
-    def map_function_call(self, item: FunctionCallProtocol) -> Any:
         raise NotImplementedError("not yet implemented...")
 
     def map_reasoning_params(self, item: ReasoningParamsProtocol) -> Any:

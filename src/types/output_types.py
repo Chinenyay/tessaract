@@ -6,7 +6,8 @@ from ..providers.provider import Provider
 
 from ..adapters.adapter import Adapter
 
-from ..types.types import OutputItem
+class OutputItem(BaseModel):
+    raw: Any
 
 class Annotation(BaseModel):
     type: Literal["citation"] = "citation"
@@ -35,19 +36,14 @@ class AssistantMessage(BaseModel):
     content: list[TextOutputItem]
     raw: Any
 
-
-
-# class OutputType(BaseModel):
-#     raw: Any
-
 class ReasoningOutputItem(OutputItem):
     type: Literal["reasoning"] = "reasoning"
     id: str | None = None
     text: str | list | None = None
     content: str | list | None = None
 
-class ToolCallOutputItem(OutputItem):
-    type: Literal["tool_call"] = "tool_call"
+class FunctionCallOutputItem(OutputItem):
+    type: Literal["function_call"] = "function_call"
     call_id: str
     name: str
     arguments: str

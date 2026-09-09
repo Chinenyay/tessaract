@@ -28,6 +28,6 @@ class InputSchema(BaseModel):
 class FunctionTool(BaseModel):
     name: str
     description: str
-    input_schema: InputSchema
+    input_schema: InputSchema | None = None
     strict: bool | None = None
-    # add a payload for non-common fields, like anthropic tool_examples
+    # add a payload for non-common fields, like anthropic tool_examples and openai output_schema

@@ -3,8 +3,7 @@ from typing import Any
 
 from ..providers.openai_provider import OpenAIProvider
 from ..providers.provider import Provider
-from ..types.types import OutputItem
-from ..types.output_types import ReasoningOutputItem, TextOutputItem, AssistantMessage
+from ..types.output_types import ReasoningOutputItem, TextOutputItem, AssistantMessage, OutputItem
 
 
 @dataclass
@@ -42,7 +41,7 @@ class Response:
             for item in self.output
             if isinstance(item, AssistantMessage)
             for block in item.content
-            if isinstance(item, TextOutputItem)
+            if isinstance(block, TextOutputItem)
         )
 
     @property
