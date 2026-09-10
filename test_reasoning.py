@@ -1,10 +1,10 @@
 import os
+
 from dotenv import load_dotenv
 
-from src.client import Tessaract
-from src.providers import OpenAIProvider
-from src.types.request import ReasoningOptions
-from src.types.output_types import AssistantMessage, ReasoningOutputItem
+from tessaract.client import Tessaract
+from tessaract.providers import OpenAIProvider
+from tessaract.types.request import ReasoningOptions
 
 load_dotenv()
 

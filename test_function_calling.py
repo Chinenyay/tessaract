@@ -1,14 +1,13 @@
+import json
 import os
 from typing import Any
-from dotenv import load_dotenv
 
-import json
+from dotenv import load_dotenv
 
 from src.client import Tessaract
 from src.providers import OpenAIProvider
 from src.tools.function import FunctionTool, InputSchema, Property
-from src.types.response import Response
-from src.types.input_types import UserMessage, FunctionToolResult
+from src.types.input_types import FunctionToolResult, UserMessage
 
 load_dotenv()
 
@@ -98,7 +97,3 @@ for item in response_2.output:
     if item.type == "reasoning":
         print(item.raw)
 print(response_2.output_text)
-
-
-
-
