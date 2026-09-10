@@ -2,11 +2,11 @@ from typing import cast
 
 from .adapters.openai_adapter import OpenAIAdapter
 from .providers import OpenAIProvider
+from .tools.function import FunctionTool
 from .types.input_types import InputType, UserMessage
 from .types.output_types import AssistantMessage, OutputItem
-from .types.request import Request, ReasoningOptions
+from .types.request import ReasoningOptions, Request
 from .types.response import Response
-from .tools.function import FunctionTool
 
 
 class Tessaract:
@@ -53,7 +53,7 @@ class Tessaract:
             elif isinstance(message, InputType):
                 all_items.append(message.raw(self.adapters[provider]))
 
-            elif isinstance(message, AssistantMessage):
+            elif isinstance(message, AssistantMessage):  # noqa: SIM114
                 all_items.append(message.raw)
 
             elif isinstance(message, OutputItem):
@@ -85,7 +85,10 @@ class Tessaract:
 
         _tools = tools if tools is not None else []
 
-        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=reasoning, tools=_tools)
+        if reasoning is not None:
+            _reasoning = reasoning
+
+        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=_reasoning, tools=_tools)
 
         _api_key = _request_provider.api_key
 

@@ -4,9 +4,6 @@ from pydantic import BaseModel, Field
 
 from ..providers.provider import Provider
 
-from ..adapters.adapter import Adapter
-
-
 
 class OutputItem(BaseModel):
     raw: Any
@@ -32,7 +29,7 @@ class TextOutputItem(OutputItem):
         default_factory=list,
     )
 
-class AssistantMessage(OutputType):
+class AssistantMessage(BaseModel):
     type: Literal["assistant_message"] = "assistant_message"
     role: Literal["assistant"] = "assistant"
     content: list[TextOutputItem]

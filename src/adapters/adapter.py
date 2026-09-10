@@ -3,7 +3,6 @@ from typing import Any, Literal
 from typing_extensions import Protocol
 
 from ..providers.provider import Provider
-
 from ..tools.function import InputSchema
 
 
@@ -20,15 +19,9 @@ class FunctionToolResultProtocol(Protocol):
 class FunctionToolSchemaProtocol(Protocol):
     name: str
     description: str
-    input_schema: InputSchema
+    input_schema: InputSchema | None
     strict: bool | None = None
     # add a payload for non-common fields, like anthropic tool_examples
-
-# class FunctionCallProtocol(Protocol):
-#     type: Literal["tool_call"] = "tool_call"
-#     call_id: str
-#     name: str
-#     arguments: str
 
 class ReasoningParamsProtocol(Protocol):
     effort: Literal["none", "minimal", "low", "medium", "high", "extra_high", "max"] | None = None

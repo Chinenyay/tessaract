@@ -3,7 +3,11 @@ from typing import Any
 
 from ..providers.openai_provider import OpenAIProvider
 from ..providers.provider import Provider
-from ..types.output_types import ReasoningOutputItem, TextOutputItem, AssistantMessage, OutputType
+from ..types.output_types import (
+    AssistantMessage,
+    OutputType,
+    TextOutputItem,
+)
 
 
 @dataclass

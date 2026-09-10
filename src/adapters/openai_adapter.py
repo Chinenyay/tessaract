@@ -1,23 +1,27 @@
+from collections.abc import Sequence
 from typing import cast
 
-
-from openai.types.responses import (
-    ResponseOutputMessage,
-    ResponseOutputText,
-    ResponseReasoningItem,
-    ResponseFunctionToolCall,
-    ResponseOutputItem,
-)
-
 from openai import Omit
-from openai.types import Reasoning
+from openai.types.shared_params import Reasoning as OpenAIReasoningParams
 
 from ..providers.openai_provider import OpenAIProvider
-from ..types.output_types import TextOutputItem, ReasoningOutputItem, FunctionCallOutputItem, AssistantMessage, OutputType
-from ..types.request import Request, ReasoningOptions
+from ..tools.function import InputSchema
+from ..types.output_types import (
+    AssistantMessage,
+    FunctionCallOutputItem,
+    OutputType,
+    ReasoningOutputItem,
+    TextOutputItem,
+)
+from ..types.request import Request
 from ..types.response import OpenAIResponse
-from ..tools.function import InputSchema, FunctionTool
-from .adapter import Adapter, FunctionToolSchemaProtocol, UserMessageProtocol, ReasoningParamsProtocol, FunctionToolResultProtocol
+from .adapter import (
+    Adapter,
+    FunctionToolResultProtocol,
+    FunctionToolSchemaProtocol,
+    ReasoningParamsProtocol,
+    UserMessageProtocol,
+)
 
 
 class OpenAIAdapter(Adapter):
@@ -31,20 +35,20 @@ class OpenAIAdapter(Adapter):
             "content": item.content
         }
 
-    def map_reasoning_params(self, reasoning: ReasoningParamsProtocol) -> Reasoning | Omit:
+    def map_reasoning_params(self, reasoning: ReasoningParamsProtocol | None) -> OpenAIReasoningParams | Omit | None:
         if reasoning is None:
             return Omit()
 
-        native_reasoning = Reasoning()
+        native_reasoning: OpenAIReasoningParams = {}
 
         if reasoning.mode is not None:
-            native_reasoning.mode = reasoning.mode
+            native_reasoning["mode"] = reasoning.mode
 
         if reasoning.summary is not None:
-            native_reasoning.summary = reasoning.summary
+            native_reasoning["summary"] = reasoning.summary
 
         if reasoning.effort is not None:
-            native_reasoning.effort = (
+            native_reasoning["effort"] = (
                 "xhigh" if reasoning.effort == "extra_high" else reasoning.effort
             )
 
@@ -65,11 +69,11 @@ class OpenAIAdapter(Adapter):
             "additionalProperties": input_schema.additionalProperties if not None else False
         }
 
-    def  map_function_schema(self, tools: list[FunctionToolSchemaProtocol]) -> list:
+    def  map_function_schema(self, tools: Sequence[FunctionToolSchemaProtocol]) -> list:
 
         _native_tools_list = []
         for tool in tools:
-            _native_tool_schema = {}
+            _native_tool_schema: dict[str, object] = {}
 
             _native_tool_schema["type"] = "function"
             _native_tool_schema["name"] = tool.name
@@ -90,7 +94,7 @@ class OpenAIAdapter(Adapter):
         }
 
     def _normalize_output(self, output_items) -> list[OutputType]:
-        _output_list = []
+        _output_list: list[OutputType] = []
 
         for item in output_items:
             if item.type == "message":
@@ -135,7 +139,7 @@ class OpenAIAdapter(Adapter):
         _raw_response = self._client.responses.create(
             model=request.model,
             input=request.input,
-            tools=self.map_function_schema(request.tools),
+            tools=self.map_function_schema(request.tools or []),
             reasoning=self.map_reasoning_params(request.reasoning)
         )
 
