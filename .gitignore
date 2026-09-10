@@ -12,3 +12,4 @@ wheels/
 /rough
 .vscode/
 .inspect_reasoning.py
+.DS_Store
