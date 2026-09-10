@@ -1,4 +1,5 @@
 import os
+from typing import Any
 from dotenv import load_dotenv
 
 import json
@@ -46,16 +47,16 @@ TOOL_MAP = {get_weather: _get_weather}
 
 model ="oai/gpt-5.6-luna"
 
-history = [
+history: list[Any] = [
     UserMessage(
         content="what is the weather in Paris?"
     )
 ]
 
-response_1: Response = client.send(
+response_1 = client.send(
     model=model,
     tools=TOOLS,
-    input=history
+    input=history,
 )
 
 history.extend(response_1.output)
@@ -77,8 +78,12 @@ for item in response_1.output:
                 result=result
             )
         )
+    elif item.type == "reasoning":
+        print(item.content)
+        print(item.text)
 
     elif item.type == "assistant_message":
+        
         print(response_1.output_text)
 
 
@@ -87,7 +92,11 @@ response_2 = client.send(
     input=history,
     tools=TOOLS
 )
-
+for item in response_2.output:
+    if item.type == "assistant_message":
+        print(item.raw)
+    if item.type == "reasoning":
+        print(item.raw)
 print(response_2.output_text)
 
 

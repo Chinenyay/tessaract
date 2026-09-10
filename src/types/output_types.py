@@ -1,10 +1,12 @@
-from typing import Any, Literal
+from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
 from ..providers.provider import Provider
 
 from ..adapters.adapter import Adapter
+
+
 
 class OutputItem(BaseModel):
     raw: Any
@@ -30,7 +32,7 @@ class TextOutputItem(OutputItem):
         default_factory=list,
     )
 
-class AssistantMessage(BaseModel):
+class AssistantMessage(OutputType):
     type: Literal["assistant_message"] = "assistant_message"
     role: Literal["assistant"] = "assistant"
     content: list[TextOutputItem]
@@ -47,3 +49,5 @@ class FunctionCallOutputItem(OutputItem):
     call_id: str
     name: str
     arguments: str
+
+OutputType: TypeAlias = AssistantMessage | ReasoningOutputItem | FunctionCallOutputItem | TextOutputItem

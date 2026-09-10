@@ -3,7 +3,7 @@ from typing import Any
 
 from ..providers.openai_provider import OpenAIProvider
 from ..providers.provider import Provider
-from ..types.output_types import ReasoningOutputItem, TextOutputItem, AssistantMessage, OutputItem
+from ..types.output_types import ReasoningOutputItem, TextOutputItem, AssistantMessage, OutputType
 
 
 @dataclass
@@ -13,7 +13,7 @@ class Response:
     model: str
     # status: ResponseStatus
 
-    output: list[OutputItem] = field(
+    output: list[OutputType] = field(
         default_factory=list,
     )
 

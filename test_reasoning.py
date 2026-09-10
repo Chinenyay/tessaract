@@ -18,7 +18,7 @@ luna="oai/gpt-5.6-luna"
 
 response = client.send(
     model=luna,
-    input="Explain the Navier-Stokes problem and how to approach solving it.",
+    input="what is 564 * 900",
     reasoning=ReasoningOptions(
         effort="high",
         summary="detailed"
@@ -31,6 +31,5 @@ for item in response.output:
         for block in item.content:
             print(block.text)
     elif item.type == "reasoning":
-        print("Thinking...")
-        print(item.content or "")
-        print(item.text or "")
+        print(item.raw)
+

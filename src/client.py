@@ -74,7 +74,7 @@ class Tessaract:
             input: str | list[str | InputType],
             reasoning: ReasoningOptions | None = None,
             tools: list[FunctionTool] | None = None
-        ) -> Response | None:
+        ) -> Response:
 
         provider, model = self._normalize_model_name(model=model)
 
@@ -99,4 +99,4 @@ class Tessaract:
             _response = adapter.generate_sync(request=_tessaract_request)
             return cast(Response, _response)
 
-        return None
+        raise NotImplementedError("Unsupported provider")
