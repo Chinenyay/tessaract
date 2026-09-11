@@ -1,6 +1,5 @@
-from typing import cast
+from typing import TYPE_CHECKING, cast
 
-from .adapters.openai_adapter import OpenAIAdapter
 from .providers import OpenAIProvider
 from .tools.function import FunctionTool
 from .types.input_types import InputType, UserMessage
@@ -8,16 +7,19 @@ from .types.output_types import AssistantMessage, OutputItem
 from .types.request import ReasoningOptions, Request
 from .types.response import Response
 
+if TYPE_CHECKING:
+    from .adapters.openai_adapter import OpenAIAdapter
 
 class Tessaract:
     def __init__(self, providers: dict[str, OpenAIProvider]):
         self.providers = providers
-        self.adapters: dict[str, OpenAIAdapter ] = {} # value should be a union of OpenAIAdapter | AnthropicAdapter once implemented
+        self.adapters: dict[str, "OpenAIAdapter" ] = {} # value should be a union of OpenAIAdapter | AnthropicAdapter once implemented
         self.register_adapter()
 
     def register_adapter(self):
         for prefix, provider in self.providers.items():
             if isinstance(provider, OpenAIProvider):
+                from .adapters.openai_adapter import OpenAIAdapter
                 adapter = OpenAIAdapter(provider)
             else:
                 raise NotImplementedError("not yet implemented")

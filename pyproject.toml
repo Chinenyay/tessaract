@@ -1,12 +1,22 @@
 [project]
 name = "tessaract"
 version = "0.1.0"
-description = "Add your description here"
+description = "Provider-agnostic interface for AI inference"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "anthropic>=0.116.0",
-    "openai>=2.45.0",
-    "python-dotenv>=1.2.2",
-    "pydantic>=2.10,<3"
+    "pydantic>=2.10,<3"   
 ]
+
+[project.optional-dependencies]
+openai = [
+    "openai>=2.45.0",
+]
+anthropic = [
+    "anthropic>=0.116.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.13, <0.13"]
+build-backend = "uv_build"
+
