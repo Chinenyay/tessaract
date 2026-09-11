@@ -15,7 +15,7 @@ class OpenAIProvider(Provider):
                 raise
             raise ImportError(
                 "OpenAI support requires the optional dependency"
-                'Install it with: pip install tessaract["openai"]'
+                'Install it with: pip install "tessaract[openai]"'
             ) from exc
 
         self._client = OpenAI(api_key=self.api_key, **self.provider_args)
