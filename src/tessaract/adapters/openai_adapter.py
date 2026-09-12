@@ -66,7 +66,7 @@ class OpenAIAdapter(Adapter):
             "type": input_schema.type,
             "properties": _properties,
             "required": input_schema.required,
-            "additionalProperties": input_schema.additionalProperties if not None else False
+            "additionalProperties": input_schema.additionalProperties if input_schema.additionalProperties is not None else False
         }
 
     def  map_function_schema(self, tools: Sequence[FunctionToolSchemaProtocol]) -> list:
