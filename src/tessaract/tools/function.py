@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -30,4 +30,4 @@ class FunctionTool(BaseModel):
     description: str
     input_schema: InputSchema | None = None
     strict: bool | None = None
-    # add a payload for non-common fields, like anthropic tool_examples and openai output_schema
+    provider_options: dict[str, Any] = Field(default_factory=dict)

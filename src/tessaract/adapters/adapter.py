@@ -21,7 +21,7 @@ class FunctionToolSchemaProtocol(Protocol):
     description: str
     input_schema: InputSchema | None
     strict: bool | None = None
-    # add a payload for non-common fields, like anthropic tool_examples
+    provider_options: dict[str, Any]
 
 class ReasoningParamsProtocol(Protocol):
     effort: Literal["none", "minimal", "low", "medium", "high", "extra_high", "max"] | None = None

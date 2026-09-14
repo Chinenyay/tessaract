@@ -83,7 +83,20 @@ class OpenAIAdapter(Adapter):
             if tool.input_schema is not None:
                 _native_tool_schema["parameters"] = self._native_tool_parameters(tool.input_schema) if tool.input_schema is not None else None
 
-            _native_tools_list.append(_native_tool_schema)
+            canonical_keys = {
+                "type",
+                "name",
+                "description",
+                "strict",
+                "parameters"
+            }
+
+            extra_fields = {
+                key: value
+                for key, value in tool.provider_options.items()
+                if key not in canonical_keys
+            }
+            _native_tools_list.append({**extra_fields, **_native_tool_schema})
         return _native_tools_list
 
     def map_tool_result(self, item: FunctionToolResultProtocol):
