@@ -1,3 +1,4 @@
+import json
 from collections.abc import Sequence
 from typing import cast
 
@@ -141,7 +142,7 @@ class OpenAIAdapter(Adapter):
                         raw=item,
                         call_id=item.call_id,
                         name=item.name,
-                        arguments=item.arguments
+                        arguments=json.loads(item.arguments)
                     )
                 )
 

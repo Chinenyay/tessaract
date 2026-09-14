@@ -45,6 +45,6 @@ class FunctionCallOutputItem(OutputItem):
     type: Literal["function_call"] = "function_call"
     call_id: str
     name: str
-    arguments: str
+    arguments: dict[str, Any] = Field(default_factory=dict)
 
 OutputType: TypeAlias = AssistantMessage | ReasoningOutputItem | FunctionCallOutputItem | TextOutputItem
