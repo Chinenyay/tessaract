@@ -136,12 +136,27 @@ class OpenAIAdapter(Adapter):
 
 
     def generate_sync(self, request: Request) -> OpenAIResponse:
-        _raw_response = self._client.responses.create(
-            model=request.model,
-            input=request.input,
-            tools=self.map_function_schema(request.tools or []),
-            reasoning=self.map_reasoning_params(request.reasoning)
-        )
+        canonical_params = {
+            "model": request.model,
+            "input": request.input,
+            "tools": self.map_function_schema(request.tools or []),
+            "reasoning": self.map_reasoning_params(request.reasoning), 
+        }
+
+        provider_options = dict(**request.provider_options or {})  # noqa: F841
+
+        extra_body = provider_options.get("extra_body")
+
+        if extra_body is not None:
+            provider_options["extra_body"] = {
+                key: value
+                for key, value in extra_body.items()
+                if key not in canonical_params
+            }
+
+        kwargs = {**provider_options, **canonical_params}
+
+        _raw_response = self._client.responses.create(**kwargs)
 
         response = OpenAIResponse(
             id=_raw_response.id,

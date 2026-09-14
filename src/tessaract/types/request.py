@@ -1,18 +1,19 @@
-from typing import Literal
-
-from pydantic import BaseModel
+from dataclasses import dataclass
+from typing import Any, Literal
 
 from ..tools.function import FunctionTool
 
 
-class ReasoningOptions(BaseModel):
+@dataclass
+class ReasoningOptions:
     effort: Literal[
         "none", "minimal", "low", "medium", "high", "extra_high", "max"
     ] | None = None
     summary: Literal["concise", "auto", "detailed"] | None = None
     mode: Literal["standard", "pro"] | None = None
 
-class Request(BaseModel):
+@dataclass
+class Request:
     '''Request model for generating a response.
         Args:
             model: str
@@ -21,12 +22,12 @@ class Request(BaseModel):
             tools: list[FunctionTool] | None = None
             reasoning:  ReasoningOptions | None = None
             stream: bool = False
-            provider_options: ProviderRequestOptions | None
+            provider_options: dict[str, Any] | None = None
     '''
     model: str
-    instructions: str | None = None
     input: list
+    instructions: str | None = None
     tools: list[FunctionTool] | None = None
     reasoning:  ReasoningOptions | None = None
     stream: bool = False
-    # provider_options: ProviderRequestOptions | None = None
+    provider_options: dict[str, Any] | None = None

@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from .providers import OpenAIProvider
 from .tools.function import FunctionTool
@@ -39,6 +39,7 @@ class Tessaract:
         input: str | list[str | InputType],
         reasoning: ReasoningOptions,
         tools: list[FunctionTool],
+        request_options: dict[str, Any]
     ) -> Request:
 
         all_items = []
@@ -69,13 +70,15 @@ class Tessaract:
             input=all_items,
             reasoning=reasoning,
             tools=tools,
+            provider_options=request_options
         )
 
     def send(
             self, model: str, 
             input: str | list[str | InputType],
             reasoning: ReasoningOptions | None = None,
-            tools: list[FunctionTool] | None = None
+            tools: list[FunctionTool] | None = None,
+            request_options: dict[str, Any] | None = None
         ) -> Response:
 
         provider, model = self._normalize_model_name(model=model)
@@ -90,7 +93,9 @@ class Tessaract:
         if reasoning is not None:
             _reasoning = reasoning
 
-        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=_reasoning, tools=_tools)
+        _request_options = request_options if request_options is not None else {}
+
+        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=_reasoning, tools=_tools, request_options=_request_options)
 
         _api_key = _request_provider.api_key
 
