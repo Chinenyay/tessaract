@@ -39,7 +39,7 @@ class Tessaract:
         model: str,
         provider: str,
         input: str | list[str | InputType],
-        reasoning: ReasoningOptions,
+        reasoning: ReasoningOptions | None,
         tools: list[FunctionTool],
         request_options: dict[str, Any],
         stream: bool
@@ -80,7 +80,7 @@ class Tessaract:
     def send(
             self, model: str, 
             input: str | list[str | InputType],
-            stream: bool,
+            stream: bool = False,
             reasoning: ReasoningOptions | None = None,
             tools: list[FunctionTool] | None = None,
             request_options: dict[str, Any] | None = None
@@ -96,12 +96,12 @@ class Tessaract:
 
         _tools = tools if tools is not None else []
 
-        if reasoning is not None:
-            _reasoning = reasoning
+        # if reasoning is not None:
+        #     _reasoning = reasoning
 
         _request_options = request_options if request_options is not None else {}
 
-        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=_reasoning, tools=_tools, request_options=_request_options, stream=stream)
+        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=reasoning, tools=_tools, request_options=_request_options, stream=stream)
 
         _api_key = _request_provider.api_key
 
