@@ -1,6 +1,7 @@
 import json
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
 from typing import cast
+from contextlib import contextmanager
 
 from openai import Omit, Stream
 from openai.types.responses import ResponseStreamEvent
@@ -222,7 +223,7 @@ class OpenAIAdapter(Adapter):
 
         return cast(OpenAIResponse, response)
 
-    def generate_stream(self, request: Request) -> :
+    def generate_stream(self, request: Request) -> Iterator[StreamEventUnion]:
     
         kwargs = self._build_request_kwargs(request)
 

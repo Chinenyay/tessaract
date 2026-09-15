@@ -1,7 +1,9 @@
-from typing import TYPE_CHECKING, Any, cast
+from collections.abc import Iterator
+from typing import TYPE_CHECKING, Any
 
 from .providers import OpenAIProvider
 from .tools.function import FunctionTool
+from .types.streaming.event_types import StreamEventUnion
 from .types.input_types import InputType, UserMessage
 from .types.output_types import AssistantMessage, OutputItem
 from .types.request import ReasoningOptions, Request
@@ -39,7 +41,8 @@ class Tessaract:
         input: str | list[str | InputType],
         reasoning: ReasoningOptions,
         tools: list[FunctionTool],
-        request_options: dict[str, Any]
+        request_options: dict[str, Any],
+        stream: bool
     ) -> Request:
 
         all_items = []
@@ -70,16 +73,19 @@ class Tessaract:
             input=all_items,
             reasoning=reasoning,
             tools=tools,
-            provider_options=request_options
+            provider_options=request_options,
+            stream=stream
         )
 
     def send(
             self, model: str, 
             input: str | list[str | InputType],
+            stream: bool,
             reasoning: ReasoningOptions | None = None,
             tools: list[FunctionTool] | None = None,
             request_options: dict[str, Any] | None = None
-        ) -> Response:
+            
+        ) -> Response | Iterator[StreamEventUnion]:
 
         provider, model = self._normalize_model_name(model=model)
 
@@ -95,7 +101,7 @@ class Tessaract:
 
         _request_options = request_options if request_options is not None else {}
 
-        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=_reasoning, tools=_tools, request_options=_request_options)
+        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=_reasoning, tools=_tools, request_options=_request_options, stream=stream)
 
         _api_key = _request_provider.api_key
 
@@ -106,7 +112,9 @@ class Tessaract:
 
             adapter = self.adapters[provider]
 
-            _response = adapter.generate_sync(request=_tessaract_request)
-            return cast(Response, _response)
+            if stream == True:
+                return adapter.generate_stream(request=_tessaract_request) 
+
+            return adapter.generate_sync(request=_tessaract_request)
 
         raise NotImplementedError("Unsupported provider")
