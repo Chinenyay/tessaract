@@ -25,11 +25,11 @@ from ..adapter import (
     UserMessageProtocol,
 )
 from ...types.streaming.event_types import (
-    Response,
     ResponseStartedEvent,
     ResponseCompletedEvent,
     TextDeltaEvent,
-    CustomProviderEvent
+    CustomProviderEvent,
+    StreamEventUnion
 )
 
 
@@ -228,6 +228,6 @@ class OpenAIAdapter(Adapter):
 
         with self._client.responses.stream(**kwargs) as stream:
             for raw_event in stream:
-                yield from raw_event
+                yield from self._normalize_stream_event(raw_event)
 
 

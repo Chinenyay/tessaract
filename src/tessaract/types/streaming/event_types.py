@@ -1,9 +1,9 @@
-from typing import Any, Literal
+from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
 # from .response import Response, ResponseError
-from types.response import ResponseError, Response
+from ..response import ResponseError, Response
 
 # change these BaseModel classes to pure python dataclasses
 class TextDeltaEvent(BaseModel):
@@ -93,3 +93,5 @@ class ResponseFailedEvent(BaseModel):
 class CustomProviderEvent(BaseModel):
     type: Literal["custom_provider_event"] = "custom_provider_event"
     raw_event: Any
+
+StreamEventUnion: TypeAlias = CustomProviderEvent | ResponseFailedEvent | ToolCallStartedEvent | ToolArgumentsDeltaEvent | ReasoningDeltaEvent | ResponseCompletedEvent | ResponseStartedEvent | TextDeltaEvent
