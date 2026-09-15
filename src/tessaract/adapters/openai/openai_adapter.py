@@ -25,9 +25,11 @@ from ..adapter import (
     UserMessageProtocol,
 )
 from ...types.streaming.event_types import (
+    Response,
     ResponseStartedEvent,
     ResponseCompletedEvent,
-    TextDeltaEvent
+    TextDeltaEvent,
+    CustomProviderEvent
 )
 
 
@@ -155,11 +157,31 @@ class OpenAIAdapter(Adapter):
         return _output_list
 
     def _normalize_stream_event(self, event):
-        if event.type == "response.created":
-            yield ResponseStartedEvent(
-                response=Response(),
-                raw_event=event
-            ) 
+        match event.type:
+            case "response.created":
+                yield ResponseStartedEvent(
+                    raw_event=event
+                )
+
+            case "response.completed":
+                yield ResponseCompletedEvent(
+                    raw_event=event
+                )
+
+            case "response.output_text.delta":
+                yield TextDeltaEvent(
+                    delta=event.delta,
+                    provider="openai",
+                    output_index=event.output_index,
+                    content_index=event.content_index,
+                    raw_event=event
+                )
+
+            case _:
+                yield CustomProviderEvent(
+                    raw_event=event
+                )
+        
 
     def _build_request_kwargs(self, request: Request):
         canonical_params = {

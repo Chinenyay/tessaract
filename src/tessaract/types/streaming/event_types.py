@@ -22,7 +22,7 @@ class TextDeltaEvent(BaseModel):
 
 class ResponseStartedEvent(BaseModel):
     type: Literal["response_started"] = "response_started"
-    response: Response
+    message: Literal["starting response..."] = "starting response..."
 
     raw_event: Any = Field(
         exclude=True,
@@ -31,7 +31,7 @@ class ResponseStartedEvent(BaseModel):
 
 class ResponseCompletedEvent(BaseModel):
     type: Literal["response.completed"] = "response.completed"
-    response: Response
+    message: Literal["... finished response"] = "... finished response"
 
     raw_event: Any = Field(
         exclude=True,
@@ -92,4 +92,4 @@ class ResponseFailedEvent(BaseModel):
 
 class CustomProviderEvent(BaseModel):
     type: Literal["custom_provider_event"] = "custom_provider_event"
-    raw: Any
+    raw_event: Any
