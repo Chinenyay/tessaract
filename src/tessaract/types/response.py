@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from typing import Any
+from enum import Enum
 
 from ..providers.openai_provider import OpenAIProvider
 from ..providers.provider import Provider
@@ -11,18 +12,32 @@ from .output_types import (
 
 
 @dataclass
+class ResponseError:
+    message: str
+    code: str | None = None
+
+class ResponseStatus(str, Enum):
+    QUEUED = "queued"
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    INCOMPLETE = "incomplete"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+
+
+@dataclass
 class Response:
     id: str
     provider: Provider 
     model: str
-    # status: ResponseStatus
+    status: ResponseStatus
 
     output: list[OutputType] = field(
         default_factory=list,
     )
 
     # usage: Usage | None = None
-    # error: ResponseError | None = None
+    error: ResponseError | None = None
 
     # finish_details: FinishDetails | None = None
 

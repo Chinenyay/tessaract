@@ -8,7 +8,7 @@ from .types.request import ReasoningOptions, Request
 from .types.response import Response
 
 if TYPE_CHECKING:
-    from .adapters.openai_adapter import OpenAIAdapter
+    from .adapters.openai.openai_adapter import OpenAIAdapter
 
 class Tessaract:
     def __init__(self, providers: dict[str, OpenAIProvider]):
@@ -19,7 +19,7 @@ class Tessaract:
     def register_adapter(self):
         for prefix, provider in self.providers.items():
             if isinstance(provider, OpenAIProvider):
-                from .adapters.openai_adapter import OpenAIAdapter
+                from .adapters.openai.openai_adapter import OpenAIAdapter
                 adapter = OpenAIAdapter(provider)
             else:
                 raise NotImplementedError("not yet implemented")

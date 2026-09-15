@@ -2,26 +2,32 @@ import json
 from collections.abc import Sequence
 from typing import cast
 
-from openai import Omit
+from openai import Omit, Stream
+from openai.types.responses import ResponseStreamEvent
 from openai.types.shared_params import Reasoning as OpenAIReasoningParams
 
-from ..providers.openai_provider import OpenAIProvider
-from ..tools.function import InputSchema
-from ..types.output_types import (
+from ...providers.openai_provider import OpenAIProvider
+from ...tools.function import InputSchema
+from ...types.output_types import (
     AssistantMessage,
     FunctionCallOutputItem,
     OutputType,
     ReasoningOutputItem,
     TextOutputItem,
 )
-from ..types.request import Request
-from ..types.response import OpenAIResponse
-from .adapter import (
+from ...types.request import Request
+from ...types.response import OpenAIResponse
+from ..adapter import (
     Adapter,
     FunctionToolResultProtocol,
     FunctionToolSchemaProtocol,
     ReasoningParamsProtocol,
     UserMessageProtocol,
+)
+from ...types.streaming.event_types import (
+    ResponseStartedEvent,
+    ResponseCompletedEvent,
+    TextDeltaEvent
 )
 
 
@@ -148,8 +154,14 @@ class OpenAIAdapter(Adapter):
 
         return _output_list
 
+    def _normalize_stream_event(self, event):
+        if event.type == "response.created":
+            yield ResponseStartedEvent(
+                response=Response(),
+                raw_event=event
+            ) 
 
-    def generate_sync(self, request: Request) -> OpenAIResponse:
+    def _build_request_kwargs(self, request: Request):
         canonical_params = {
             "model": request.model,
             "input": request.input,
@@ -168,12 +180,18 @@ class OpenAIAdapter(Adapter):
                 if key not in canonical_params
             }
 
-        kwargs = {**provider_options, **canonical_params}
 
-        _raw_response = self._client.responses.create(**kwargs)
+        return {**provider_options, **canonical_params}
+
+    def generate_sync(self, request: Request) -> OpenAIResponse:
+
+        kwargs = self._build_request_kwargs(request)
+
+        _raw_response = self._client.responses.create(**kwargs, stream=False)
 
         response = OpenAIResponse(
             id=_raw_response.id,
+            status=_raw_response.status,
             provider=self._provider,
             model=request.model,
             output=self._normalize_output(_raw_response.output),
@@ -181,3 +199,13 @@ class OpenAIAdapter(Adapter):
         )
 
         return cast(OpenAIResponse, response)
+
+    def generate_stream(self, request: Request) -> :
+    
+        kwargs = self._build_request_kwargs(request)
+
+        with self._client.responses.stream(**kwargs) as stream:
+            for raw_event in stream:
+                yield from raw_event
+
+
