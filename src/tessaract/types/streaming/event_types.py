@@ -31,6 +31,7 @@ class ResponseStartedEvent(BaseModel):
 
 class ResponseCompletedEvent(BaseModel):
     type: Literal["response.completed"] = "response.completed"
+    response: Response
     message: Literal["... finished response"] = "... finished response"
 
     raw_event: Any = Field(

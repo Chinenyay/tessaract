@@ -28,9 +28,10 @@ class ResponseStatus(str, Enum):
 @dataclass
 class Response:
     id: str
-    provider: Provider 
     model: str
     status: ResponseStatus
+    provider: Provider  | None = None
+
 
     output: list[OutputType] = field(
         default_factory=list,

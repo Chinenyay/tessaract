@@ -1,10 +1,8 @@
 import json
 from collections.abc import Iterator, Sequence
 from typing import cast
-from contextlib import contextmanager
 
-from openai import Omit, Stream
-from openai.types.responses import ResponseStreamEvent
+from openai import Omit
 from openai.types.shared_params import Reasoning as OpenAIReasoningParams
 
 from ...providers.openai_provider import OpenAIProvider
@@ -17,20 +15,20 @@ from ...types.output_types import (
     TextOutputItem,
 )
 from ...types.request import Request
-from ...types.response import OpenAIResponse
+from ...types.response import OpenAIResponse, ResponseError
+from ...types.streaming.event_types import (
+    CustomProviderEvent,
+    ResponseCompletedEvent,
+    ResponseStartedEvent,
+    StreamEventUnion,
+    TextDeltaEvent,
+)
 from ..adapter import (
     Adapter,
     FunctionToolResultProtocol,
     FunctionToolSchemaProtocol,
     ReasoningParamsProtocol,
     UserMessageProtocol,
-)
-from ...types.streaming.event_types import (
-    ResponseStartedEvent,
-    ResponseCompletedEvent,
-    TextDeltaEvent,
-    CustomProviderEvent,
-    StreamEventUnion
 )
 
 
@@ -166,6 +164,14 @@ class OpenAIAdapter(Adapter):
 
             case "response.completed":
                 yield ResponseCompletedEvent(
+                    response=OpenAIResponse(
+                        id=event.response.id,
+                        model=event.response.model,
+                        status=event.response.status,
+                        output=self._normalize_output(event.response.output),
+                        error=ResponseError(message=event.response.error.message) if event.response.error else None,
+                        raw_response=event.response
+                        ),
                     raw_event=event
                 )
 
@@ -230,5 +236,3 @@ class OpenAIAdapter(Adapter):
         with self._client.responses.stream(**kwargs) as stream:
             for raw_event in stream:
                 yield from self._normalize_stream_event(raw_event)
-
-
