@@ -2,8 +2,9 @@ from typing import Any, Literal, TypeAlias
 
 from pydantic import BaseModel, Field
 
-# from .response import Response, ResponseError
-from ..response import ResponseError, Response
+from ..output_types import OutputType
+from ..response import Response, ResponseError
+
 
 # change these BaseModel classes to pure python dataclasses
 class TextDeltaEvent(BaseModel):
@@ -52,7 +53,7 @@ class ReasoningDeltaEvent(BaseModel):
         repr=False
     )
 
-class ToolArgumentsDeltaEvent(BaseModel):
+class FunctionCallArgumentDeltaEvent(BaseModel):
     type: Literal["tool_arguments.delta"] = "tool_arguments.delta"
     item_id: str | None = None
     delta: str
@@ -91,8 +92,28 @@ class ResponseFailedEvent(BaseModel):
         repr=False
     )
 
+class OutputItemCompletedEvent(BaseModel):
+    type: Literal["output_item.done"] = "output_item.done"
+    output_index: int | None = None
+    item: OutputType
+    raw_event: Any = Field(
+        default=None,
+        exclude=True,
+        repr=False
+    )
+
 class CustomProviderEvent(BaseModel):
     type: Literal["custom_provider_event"] = "custom_provider_event"
     raw_event: Any
 
-StreamEventUnion: TypeAlias = CustomProviderEvent | ResponseFailedEvent | ToolCallStartedEvent | ToolArgumentsDeltaEvent | ReasoningDeltaEvent | ResponseCompletedEvent | ResponseStartedEvent | TextDeltaEvent
+StreamEventUnion: TypeAlias = (
+    CustomProviderEvent | 
+    ResponseFailedEvent | 
+    ToolCallStartedEvent | 
+    FunctionCallArgumentDeltaEvent | 
+    ReasoningDeltaEvent | 
+    ResponseCompletedEvent | 
+    ResponseStartedEvent | 
+    TextDeltaEvent
+    )
+

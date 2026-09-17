@@ -1,13 +1,13 @@
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from .providers import OpenAIProvider
 from .tools.function import FunctionTool
-from .types.streaming.event_types import StreamEventUnion
 from .types.input_types import InputType, UserMessage
 from .types.output_types import AssistantMessage, OutputItem
 from .types.request import ReasoningOptions, Request
 from .types.response import Response
+from .types.streaming.event_types import StreamEventUnion
 
 if TYPE_CHECKING:
     from .adapters.openai.openai_adapter import OpenAIAdapter
@@ -76,6 +76,38 @@ class Tessaract:
             provider_options=request_options,
             stream=stream
         )
+
+    @overload
+    def send(
+            self, model: str, 
+            input: str | list[str | InputType],
+            stream: Literal[False],
+            reasoning: ReasoningOptions | None = None,
+            tools: list[FunctionTool] | None = None,
+            request_options: dict[str, Any] | None = None
+            ) -> Response: ...
+
+    @overload
+    def send(
+            self, model: str, 
+            input: str | list[str | InputType],
+            stream: Literal[True],
+            reasoning: ReasoningOptions | None = None,
+            tools: list[FunctionTool] | None = None,
+            request_options: dict[str, Any] | None = None
+            ) -> Iterator[StreamEventUnion]: ...
+
+    @overload
+    def send(
+        self,
+        model: str,
+        input: str | list[str | InputType],
+        stream: bool,
+        reasoning: ReasoningOptions | None = None,
+        tools: list[FunctionTool] | None = None,
+        request_options: dict[str, Any] | None = None,
+    ) -> Response | Iterator[StreamEventUnion]: ...
+
 
     def send(
             self, model: str, 

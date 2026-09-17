@@ -18,6 +18,8 @@ from ...types.request import Request
 from ...types.response import OpenAIResponse, ResponseError
 from ...types.streaming.event_types import (
     CustomProviderEvent,
+    FunctionCallArgumentDeltaEvent,
+    OutputItemCompletedEvent,
     ResponseCompletedEvent,
     ResponseStartedEvent,
     StreamEventUnion,
@@ -114,7 +116,43 @@ class OpenAIAdapter(Adapter):
             "output": item.result
         }
 
-    def _normalize_output(self, output_items) -> list[OutputType]:
+        
+    def _normalize_output_item(self, output_item) -> OutputType:
+        match output_item.type:
+            case "message":
+                return AssistantMessage(
+                        raw=output_item,
+                        content=[
+                            TextOutputItem(
+                                raw=i,
+                                text=i.text,
+                                annotations=i.annotations
+                            )
+                            for i in output_item.content
+                        ]
+                    )
+
+            case "reasoning":
+                return ReasoningOutputItem(
+                    raw=output_item,
+                    id=output_item.id,
+                    content="".join(part.text for part in output_item.content),
+                    text="".join(part.text for part in output_item.summary)
+                ) 
+
+            case "function_call":
+                return FunctionCallOutputItem(
+                    raw=output_item,
+                    call_id=output_item.call_id,
+                    name=output_item.name,
+                    arguments=json.loads(output_item.arguments)
+                )
+
+            case _:
+                raise ValueError(f"Unsupported OpenAI output item type: {output_item.type!r}")
+
+
+    def _normalize_output(self, output_items) -> list[OutputType] | OutputType:
         _output_list: list[OutputType] = []
 
         for item in output_items:
@@ -184,6 +222,19 @@ class OpenAIAdapter(Adapter):
                     raw_event=event
                 )
 
+            case "response.output_item.done":
+                yield OutputItemCompletedEvent(
+                    item=self._normalize_output_item(event.item),
+                    raw_event=event
+                )
+
+            case "response.function_call_arguments.delta":
+                yield FunctionCallArgumentDeltaEvent(
+                    delta=event.delta,
+                    output_index=event.output_index,
+                    raw_event=event
+                )
+
             case _:
                 yield CustomProviderEvent(
                     raw_event=event
@@ -198,7 +249,7 @@ class OpenAIAdapter(Adapter):
             "reasoning": self.map_reasoning_params(request.reasoning), 
         }
 
-        provider_options = dict(**request.provider_options or {})  # noqa: F841
+        provider_options = dict(**request.provider_options or {})
 
         extra_body = provider_options.get("extra_body")
 
