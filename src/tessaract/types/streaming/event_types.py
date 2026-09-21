@@ -40,8 +40,8 @@ class ResponseCompletedEvent(BaseModel):
         repr=False
     )
 
-class ReasoningDeltaEvent(BaseModel):
-    type: Literal["reasoning.delta"] = "reasoning.delta"
+class ReasoningSummaryDeltaEvent(BaseModel):
+    type: Literal["reasoning_summary.delta"] = "reasoning_summary.delta"
     item_id: str | None = None
     delta: str
     output_index: int
@@ -52,6 +52,20 @@ class ReasoningDeltaEvent(BaseModel):
         exclude=True,
         repr=False
     )
+
+class ReasoningTextDeltaEvent(BaseModel):
+    type: Literal["reasoning_text.delta"] = "reasoning_text.delta"
+    item_id: str | None = None
+    delta: str
+    output_index: int
+    content_index: int | None = None
+
+    raw_event: Any | None = Field(
+        default=None,
+        exclude=True,
+        repr=False
+    )
+
 
 class FunctionCallArgumentDeltaEvent(BaseModel):
     type: Literal["tool_arguments.delta"] = "tool_arguments.delta"
@@ -111,7 +125,8 @@ StreamEventUnion: TypeAlias = (
     ResponseFailedEvent | 
     ToolCallStartedEvent | 
     FunctionCallArgumentDeltaEvent | 
-    ReasoningDeltaEvent | 
+    ReasoningTextDeltaEvent | 
+    ReasoningSummaryDeltaEvent |
     ResponseCompletedEvent | 
     ResponseStartedEvent | 
     TextDeltaEvent

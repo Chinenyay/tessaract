@@ -51,22 +51,23 @@ class Tessaract:
             converted_item = UserMessage(content=input)
             all_items.append(converted_item.raw(self.adapters[provider]))
 
-        for message in input:
-            if isinstance(message, str):
-                converted_item = UserMessage(content=message)
-                all_items.append(converted_item.raw(self.adapters[provider]))
-                
-            elif isinstance(message, InputType):
-                all_items.append(message.raw(self.adapters[provider]))
+        else:
+            for message in input:
+                if isinstance(message, str):
+                    converted_item = UserMessage(content=message)
+                    all_items.append(converted_item.raw(self.adapters[provider]))
+                    
+                elif isinstance(message, InputType):
+                    all_items.append(message.raw(self.adapters[provider]))
 
-            elif isinstance(message, AssistantMessage):  # noqa: SIM114
-                all_items.append(message.raw)
+                elif isinstance(message, AssistantMessage):  # noqa: SIM114
+                    all_items.append(message.raw)
 
-            elif isinstance(message, OutputItem):
-                all_items.append(message.raw)
+                elif isinstance(message, OutputItem):
+                    all_items.append(message.raw)
 
-            else:
-                raise TypeError(f"Unsupported input type: {type(input).__name__}")
+                else:
+                    raise TypeError(f"Unsupported input type: {type(message).__name__}")
 
         return Request(
             model=model,

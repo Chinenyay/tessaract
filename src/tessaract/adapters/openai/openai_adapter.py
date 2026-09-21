@@ -20,6 +20,8 @@ from ...types.streaming.event_types import (
     CustomProviderEvent,
     FunctionCallArgumentDeltaEvent,
     OutputItemCompletedEvent,
+    ReasoningSummaryDeltaEvent,
+    ReasoningTextDeltaEvent,
     ResponseCompletedEvent,
     ResponseStartedEvent,
     StreamEventUnion,
@@ -225,6 +227,22 @@ class OpenAIAdapter(Adapter):
             case "response.output_item.done":
                 yield OutputItemCompletedEvent(
                     item=self._normalize_output_item(event.item),
+                    raw_event=event
+                )
+
+            case "response.reasoning_summary_text.delta":
+                yield ReasoningSummaryDeltaEvent(
+                    delta=event.delta,
+                    output_index=event.output_index,
+                    item_id=event.item_id,
+                    raw_event=event
+                )
+
+            case "response.reasoning_text.delta":
+                yield ReasoningTextDeltaEvent(
+                    delta=event.delta,
+                    output_index=event.output_index,
+                    item_id=event.item_id,
                     raw_event=event
                 )
 
