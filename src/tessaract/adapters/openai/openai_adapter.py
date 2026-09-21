@@ -10,6 +10,7 @@ from ...tools.function import InputSchema
 from ...types.output_types import (
     AssistantMessage,
     FunctionCallOutputItem,
+    ProviderOutputItem,
     OutputType,
     ReasoningOutputItem,
     TextOutputItem,
@@ -120,6 +121,15 @@ class OpenAIAdapter(Adapter):
 
         
     def _normalize_output_item(self, output_item) -> OutputType:
+        if output_item.type == "message" and (
+            output_item.content is None or any(
+                part.type != "output_text"
+                or bool(getattr(part, "annotations", []))
+                for part in output_item.content
+            )
+        ):
+            return ProviderOutputItem(raw=output_item, provider_type=output_item.type)
+        
         match output_item.type:
             case "message":
                 return AssistantMessage(
@@ -154,46 +164,8 @@ class OpenAIAdapter(Adapter):
                 raise ValueError(f"Unsupported OpenAI output item type: {output_item.type!r}")
 
 
-    def _normalize_output(self, output_items) -> list[OutputType] | OutputType:
-        _output_list: list[OutputType] = []
-
-        for item in output_items:
-            if item.type == "message":
-                _output_list.append(
-                    AssistantMessage(
-                        raw=item,
-                        content=[
-                            TextOutputItem(
-                                raw=i,
-                                text=i.text,
-                                annotations=i.annotations
-                            )
-                            for i in item.content
-                        ]
-                    )
-                )
-    
-            elif item.type == "reasoning":
-                _output_list.append(
-                    ReasoningOutputItem(
-                        raw=item,
-                        id=item.id,
-                        content="".join(part.text for part in item.content),
-                        text="".join(part.text for part in item.summary)
-                    )
-                )
-                
-            elif item.type == "function_call":
-                _output_list.append(
-                    FunctionCallOutputItem(
-                        raw=item,
-                        call_id=item.call_id,
-                        name=item.name,
-                        arguments=json.loads(item.arguments)
-                    )
-                )
-
-        return _output_list
+    def _normalize_output(self, output_items) -> list[OutputType]:
+        return [self._normalize_output_item(item) for item in output_items]
 
     def _normalize_stream_event(self, event):
         match event.type:

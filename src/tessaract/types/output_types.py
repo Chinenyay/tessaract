@@ -47,4 +47,14 @@ class FunctionCallOutputItem(OutputItem):
     name: str
     arguments: dict[str, Any] = Field(default_factory=dict)
 
-OutputType: TypeAlias = AssistantMessage | ReasoningOutputItem | FunctionCallOutputItem | TextOutputItem
+class ProviderOutputItem(OutputItem):
+    type: Literal["provider_output"] = "provider_output"
+    provider_type: str
+
+OutputType: TypeAlias = (
+    AssistantMessage | 
+    ReasoningOutputItem | 
+    FunctionCallOutputItem | 
+    TextOutputItem | 
+    ProviderOutputItem
+    )
