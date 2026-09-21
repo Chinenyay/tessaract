@@ -53,6 +53,17 @@ class ReasoningSummaryDeltaEvent(BaseModel):
         repr=False
     )
 
+class ReasoningStartedEvent(BaseModel):
+    type: Literal["reasoning.started"] = "reasoning.started"
+    item_id: str
+    raw_event: Any | None = Field(
+        default=None,
+        exclude=True,
+        repr=False
+    )
+
+
+
 class ReasoningTextDeltaEvent(BaseModel):
     type: Literal["reasoning_text.delta"] = "reasoning_text.delta"
     item_id: str | None = None
@@ -65,7 +76,6 @@ class ReasoningTextDeltaEvent(BaseModel):
         exclude=True,
         repr=False
     )
-
 
 class FunctionCallArgumentDeltaEvent(BaseModel):
     type: Literal["tool_arguments.delta"] = "tool_arguments.delta"
@@ -117,11 +127,13 @@ class OutputItemCompletedEvent(BaseModel):
     )
 
 class CustomProviderEvent(BaseModel):
-    type: Literal["custom_provider_event"] = "custom_provider_event"
+    _type: Literal["custom_provider_event"] = "custom_provider_event"
+    type: str
     raw_event: Any
 
 StreamEventUnion: TypeAlias = (
     CustomProviderEvent | 
+    ReasoningStartedEvent |
     ResponseFailedEvent | 
     ToolCallStartedEvent | 
     FunctionCallArgumentDeltaEvent | 

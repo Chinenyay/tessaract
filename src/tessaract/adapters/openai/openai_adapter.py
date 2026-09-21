@@ -21,6 +21,7 @@ from ...types.streaming.event_types import (
     CustomProviderEvent,
     FunctionCallArgumentDeltaEvent,
     OutputItemCompletedEvent,
+    ReasoningStartedEvent,
     ReasoningSummaryDeltaEvent,
     ReasoningTextDeltaEvent,
     ResponseCompletedEvent,
@@ -225,11 +226,18 @@ class OpenAIAdapter(Adapter):
                     raw_event=event
                 )
 
-            case _:
-                yield CustomProviderEvent(
+            case "response.reasoning_summary_part.added":
+                yield ReasoningStartedEvent(
+                    item_id=event.item_id,
                     raw_event=event
                 )
-        
+
+            case _:
+                yield CustomProviderEvent(
+                    type=event.type,
+                    raw_event=event
+                )
+
 
     def _build_request_kwargs(self, request: Request):
         canonical_params = {
