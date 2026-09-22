@@ -360,6 +360,7 @@ name = "tessaract"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "anthropic" },
     { name = "pydantic" },
 ]
 
@@ -373,6 +374,7 @@ openai = [
 
 [package.metadata]
 requires-dist = [
+    { name = "anthropic", specifier = ">=0.116.0" },
     { name = "anthropic", marker = "extra == 'anthropic'", specifier = ">=0.116.0" },
     { name = "openai", marker = "extra == 'openai'", specifier = ">=2.45.0" },
     { name = "pydantic", specifier = ">=2.10,<3" },

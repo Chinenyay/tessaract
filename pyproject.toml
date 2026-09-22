@@ -5,7 +5,8 @@ description = "Provider-agnostic interface for AI inference"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "pydantic>=2.10,<3"   
+    "anthropic>=0.116.0",
+    "pydantic>=2.10,<3",
 ]
 
 [project.optional-dependencies]

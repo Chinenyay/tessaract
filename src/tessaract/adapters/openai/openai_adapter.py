@@ -10,8 +10,8 @@ from ...tools.function import InputSchema
 from ...types.output_types import (
     AssistantMessage,
     FunctionCallOutputItem,
-    ProviderOutputItem,
     OutputType,
+    ProviderOutputItem,
     ReasoningOutputItem,
     TextOutputItem,
 )
