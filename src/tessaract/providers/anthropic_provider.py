@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 class AnthropicProvider(Provider):
-    def __post__init__(self):
+    def __post_init__(self):
         try:
             from anthropic import Anthropic
         except ModuleNotFoundError as exc:
@@ -20,5 +20,6 @@ class AnthropicProvider(Provider):
         
         self._client = Anthropic(api_key=self.api_key, **self.provider_args)
 
+    @property
     def client(self) -> "Anthropic":
-        return cast(Anthropic, self._client)
+        return cast("Anthropic", self._client)

@@ -68,6 +68,7 @@ class OpenAIAdapter(Adapter):
 
         return native_reasoning
 
+
     def _native_tool_parameters(self, input_schema: InputSchema):
         _properties = {}
         for prop_name, prop_schema in input_schema.properties.items():
@@ -112,6 +113,7 @@ class OpenAIAdapter(Adapter):
             }
             _native_tools_list.append({**extra_fields, **_native_tool_schema})
         return _native_tools_list
+
 
     def map_tool_result(self, item: FunctionToolResultProtocol):
         return {
@@ -256,6 +258,7 @@ class OpenAIAdapter(Adapter):
                 key: value
                 for key, value in extra_body.items()
                 if key not in canonical_params
+                and key != "max_tokens"
             }
 
 

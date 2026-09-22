@@ -1,7 +1,7 @@
 from collections.abc import Iterator
 from typing import TYPE_CHECKING, Any, Literal, overload
 
-from .providers import OpenAIProvider
+from .providers import AnthropicProvider, OpenAIProvider
 from .tools.function import FunctionTool
 from .types.input_types import InputType, UserMessage
 from .types.output_types import AssistantMessage, OutputItem
@@ -11,11 +11,12 @@ from .types.streaming.event_types import StreamEventUnion
 
 if TYPE_CHECKING:
     from .adapters.openai.openai_adapter import OpenAIAdapter
+    from .adapters.anthropic.anthropic_adapter import AnthropicAdapter
 
 class Tessaract:
-    def __init__(self, providers: dict[str, OpenAIProvider]):
+    def __init__(self, providers: dict[str, OpenAIProvider | AnthropicProvider]):
         self.providers = providers
-        self.adapters: dict[str, "OpenAIAdapter" ] = {} # value should be a union of OpenAIAdapter | AnthropicAdapter once implemented
+        self.adapters: dict[str, "OpenAIAdapter" | "AnthropicAdapter" ] = {} # value should be a union of OpenAIAdapter | AnthropicAdapter once implemented
         self.register_adapter()
 
     def register_adapter(self):
@@ -23,6 +24,9 @@ class Tessaract:
             if isinstance(provider, OpenAIProvider):
                 from .adapters.openai.openai_adapter import OpenAIAdapter
                 adapter = OpenAIAdapter(provider)
+            elif isinstance(provider, AnthropicProvider):
+                from .adapters.anthropic.anthropic_adapter import AnthropicAdapter
+                adapter = AnthropicAdapter(provider)
             else:
                 raise NotImplementedError("not yet implemented")
             self.adapters[prefix] = adapter
@@ -42,7 +46,8 @@ class Tessaract:
         reasoning: ReasoningOptions | None,
         tools: list[FunctionTool],
         request_options: dict[str, Any],
-        stream: bool
+        stream: bool,
+        max_tokens: int | None
     ) -> Request:
 
         all_items = []
@@ -75,7 +80,8 @@ class Tessaract:
             reasoning=reasoning,
             tools=tools,
             provider_options=request_options,
-            stream=stream
+            stream=stream,
+            max_tokens=max_tokens
         )
 
     @overload
@@ -85,7 +91,8 @@ class Tessaract:
             stream: Literal[False],
             reasoning: ReasoningOptions | None = None,
             tools: list[FunctionTool] | None = None,
-            request_options: dict[str, Any] | None = None
+            request_options: dict[str, Any] | None = None,
+            max_tokens: int | None = None
             ) -> Response: ...
 
     @overload
@@ -95,7 +102,8 @@ class Tessaract:
             stream: Literal[True],
             reasoning: ReasoningOptions | None = None,
             tools: list[FunctionTool] | None = None,
-            request_options: dict[str, Any] | None = None
+            request_options: dict[str, Any] | None = None,
+            max_tokens: int | None = None
             ) -> Iterator[StreamEventUnion]: ...
 
     @overload
@@ -107,6 +115,7 @@ class Tessaract:
         reasoning: ReasoningOptions | None = None,
         tools: list[FunctionTool] | None = None,
         request_options: dict[str, Any] | None = None,
+        max_tokens: int | None = None
     ) -> Response | Iterator[StreamEventUnion]: ...
 
 
@@ -116,7 +125,8 @@ class Tessaract:
             stream: bool = False,
             reasoning: ReasoningOptions | None = None,
             tools: list[FunctionTool] | None = None,
-            request_options: dict[str, Any] | None = None
+            request_options: dict[str, Any] | None = None,
+            max_tokens: int | None = None
             
         ) -> Response | Iterator[StreamEventUnion]:
 
@@ -134,7 +144,16 @@ class Tessaract:
 
         _request_options = request_options if request_options is not None else {}
 
-        _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=reasoning, tools=_tools, request_options=_request_options, stream=stream)
+        _tessaract_request = self._build_request_model(
+            model=model, 
+            input=input, 
+            provider=provider, 
+            reasoning=reasoning, 
+            tools=_tools, 
+            request_options=_request_options, 
+            stream=stream,
+            max_tokens=max_tokens
+        )
 
         _api_key = _request_provider.api_key
 
@@ -148,6 +167,10 @@ class Tessaract:
             if stream == True:
                 return adapter.generate_stream(request=_tessaract_request) 
 
+            return adapter.generate_sync(request=_tessaract_request)
+
+        elif isinstance(_request_provider, AnthropicProvider):
+            adapter = self.adapters[provider]
             return adapter.generate_sync(request=_tessaract_request)
 
         raise NotImplementedError("Unsupported provider")

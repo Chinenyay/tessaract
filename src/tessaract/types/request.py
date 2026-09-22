@@ -23,6 +23,7 @@ class Request:
             reasoning:  ReasoningOptions | None = None
             stream: bool = False
             provider_options: dict[str, Any] | None = None
+            max_tokens: int | None = None
     '''
     model: str
     input: list
@@ -31,3 +32,4 @@ class Request:
     reasoning:  ReasoningOptions | None = None
     stream: bool = False
     provider_options: dict[str, Any] | None = None
+    max_tokens: int | None = None

@@ -1,7 +1,8 @@
 from dataclasses import dataclass, field
-from typing import Any
 from enum import Enum
+from typing import Any
 
+from ..providers.anthropic_provider import AnthropicProvider
 from ..providers.openai_provider import OpenAIProvider
 from ..providers.provider import Provider
 from .output_types import (
@@ -29,9 +30,8 @@ class ResponseStatus(str, Enum):
 class Response:
     id: str
     model: str
-    status: ResponseStatus
+    status: ResponseStatus | None = None
     provider: Provider  | None = None
-
 
     output: list[OutputType] = field(
         default_factory=list,
@@ -71,3 +71,6 @@ class Response:
 
 class OpenAIResponse(Response):
     provider: OpenAIProvider
+
+class AnthropicResponse(Response):
+    provider: AnthropicProvider

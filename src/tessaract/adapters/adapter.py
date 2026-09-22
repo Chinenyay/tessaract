@@ -51,5 +51,7 @@ class Adapter:
     def map_reasoning(self, item: ReasoningProtocol) -> Any:
         raise NotImplementedError("not yet implemented")
 
+    
+
 
 
