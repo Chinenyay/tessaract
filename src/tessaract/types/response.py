@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -27,7 +28,7 @@ class ResponseStatus(str, Enum):
 
 
 @dataclass
-class Response:
+class Response(ABC):
     id: str
     model: str
     status: ResponseStatus | None = None
@@ -55,14 +56,9 @@ class Response:
     )
 
     @property
+    @abstractmethod
     def output_text(self) -> str:
-        return "".join(
-            block.text
-            for item in self.output
-            if isinstance(item, AssistantMessage)
-            for block in item.content
-            if isinstance(block, TextOutputItem)
-        )
+        ...
 
     @property
     def response_id(self) -> str:
@@ -72,5 +68,22 @@ class Response:
 class OpenAIResponse(Response):
     provider: OpenAIProvider
 
+    @property
+    def output_text(self) -> str:
+        return "".join(
+            block.text
+            for item in self.output
+            if isinstance(item, AssistantMessage)
+            for block in item.content
+        )
+
 class AnthropicResponse(Response):
     provider: AnthropicProvider
+
+    @property
+    def output_text(self) -> str:
+        return "".join(
+            item.text
+            for item in self.output
+            if isinstance(item, TextOutputItem)
+        )

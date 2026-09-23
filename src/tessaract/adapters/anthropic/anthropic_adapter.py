@@ -82,48 +82,33 @@ class AnthropicAdapter(Adapter):
             "content": item.content
         }
 
-    def _normalize_output_item(self, output_item) -> OutputType:
-        if output_item.type == "message" and (
-            output_item.content is None or any(
-                part.type != "output_text"
-                or bool(getattr(part, "annotations", []))
-                for part in output_item.content
-            )
-        ):
-            return ProviderOutputItem(raw=output_item, provider_type=output_item.type)
-        
-        match output_item.type:
-            case "message":
-                return AssistantMessage(
-                        raw=output_item,
-                        content=[
-                            TextOutputItem(
-                                raw=i,
-                                text=i.text,
-                                annotations=i.annotations
-                            )
-                            for i in output_item.content
-                        ]
+    def _normalize_output_item(self, content_block) -> OutputType:
+
+        match content_block.type:
+            case "text":
+                return TextOutputItem(
+                        raw=content_block,
+                        text=content_block.text
                     )
 
-            case "reasoning":
-                return ReasoningOutputItem(
-                    raw=output_item,
-                    id=output_item.id,
-                    content="".join(part.text for part in output_item.content),
-                    text="".join(part.text for part in output_item.summary)
-                ) 
+            # case "thinking":
+            #     return ReasoningOutputItem(
+            #         raw=output_item,
+            #         id=output_item.id,
+            #         content="".join(part.text for part in output_item.content),
+            #         text="".join(part.text for part in output_item.summary)
+            #     ) 
 
-            case "function_call":
-                return FunctionCallOutputItem(
-                    raw=output_item,
-                    call_id=output_item.call_id,
-                    name=output_item.name,
-                    arguments=json.loads(output_item.arguments)
-                )
+            # case "function_call":
+            #     return FunctionCallOutputItem(
+            #         raw=output_item,
+            #         call_id=output_item.call_id,
+            #         name=output_item.name,
+            #         arguments=json.loads(output_item.arguments)
+            #     )
 
             case _:
-                raise ValueError(f"Unsupported OpenAI output item type: {output_item.type!r}")
+                raise ValueError(f"Unsupported Anthropic output item type: {content_block.type!r}")
 
     def _normalize_output(self, output_items) -> list[OutputType]:
         return [self._normalize_output_item(item) for item in output_items]
