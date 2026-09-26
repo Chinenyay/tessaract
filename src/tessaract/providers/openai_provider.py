@@ -1,3 +1,4 @@
+import os
 from typing import TYPE_CHECKING, cast
 
 from .provider import Provider
@@ -14,11 +15,20 @@ class OpenAIProvider(Provider):
             if exc.name != "openai":
                 raise
             raise ImportError(
-                "OpenAI support requires the optional dependency"
+                "OpenAI support requires the optional dependency. "
                 'Install it with: pip install "tessaract[openai]"'
             ) from exc
 
-        self._client = OpenAI(api_key=self.api_key, **self.provider_args)
+        if self.api_key is None:
+            self.api_key = os.environ.get("OPENAI_API_KEY")
+
+        if self.api_key is None:
+            raise ValueError(
+                "No OpenAI API key found. Pass api_key to OpenAIProvider "
+                "or set the OPENAI_API_KEY environment variable."
+            )
+
+        self._client = OpenAI(**self._client_kwargs())
 
     @property
     def client(self) -> "OpenAI":

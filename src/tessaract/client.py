@@ -28,9 +28,12 @@ class Tessaract:
             self.adapters[prefix] = adapter
 
     def _normalize_model_name(self, model: str):
-        model_parts = model.split("/")
-        model_prefix = model_parts[0]
-        model_name = model_parts[1]
+        model_prefix, separator, model_name = model.partition("/")
+
+        if not separator or not model_prefix or not model_name:
+            raise ValueError(
+                f"model must be of the form '<provider prefix>/<model name>', got {model!r}"
+            )
 
         return (model_prefix, model_name)
 
@@ -136,11 +139,6 @@ class Tessaract:
 
         _tessaract_request = self._build_request_model(model=model, input=input, provider=provider, reasoning=reasoning, tools=_tools, request_options=_request_options, stream=stream)
 
-        _api_key = _request_provider.api_key
-
-        if _api_key is None:
-            raise RuntimeError("OPENAI_API_KEY is not configured.")
-        
         if isinstance(_request_provider, OpenAIProvider):
 
             adapter = self.adapters[provider]

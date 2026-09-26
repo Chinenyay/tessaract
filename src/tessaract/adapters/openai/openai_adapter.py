@@ -1,12 +1,11 @@
 import json
 from collections.abc import Iterator, Sequence
-from typing import cast
 
 from openai import Omit
 from openai.types.shared_params import Reasoning as OpenAIReasoningParams
 
 from ...providers.openai_provider import OpenAIProvider
-from ...tools.function import InputSchema
+from ...tools.function import InputSchema, Property
 from ...types.output_types import (
     AssistantMessage,
     FunctionCallOutputItem,
@@ -25,9 +24,11 @@ from ...types.streaming.event_types import (
     ReasoningSummaryDeltaEvent,
     ReasoningTextDeltaEvent,
     ResponseCompletedEvent,
+    ResponseFailedEvent,
     ResponseStartedEvent,
     StreamEventUnion,
     TextDeltaEvent,
+    ToolCallStartedEvent,
 )
 from ..adapter import (
     Adapter,
@@ -68,13 +69,38 @@ class OpenAIAdapter(Adapter):
 
         return native_reasoning
 
+    def _native_property(self, prop: Property) -> dict:
+        native: dict[str, object] = {"type": prop.type}
+
+        if prop.description is not None:
+            native["description"] = prop.description
+
+        if prop.enum is not None:
+            native["enum"] = prop.enum
+
+        if prop.items is not None:
+            native["items"] = self._native_property(prop.items)
+
+        if prop.properties is not None:
+            native["properties"] = {
+                name: self._native_property(nested)
+                for name, nested in prop.properties.items()
+            }
+
+        if prop.required is not None:
+            native["required"] = prop.required
+
+        # Strict mode requires additionalProperties: false on every object
+        if "object" in prop._types():
+            native["additionalProperties"] = prop.additionalProperties if prop.additionalProperties is not None else False
+
+        return native
+
     def _native_tool_parameters(self, input_schema: InputSchema):
-        _properties = {}
-        for prop_name, prop_schema in input_schema.properties.items():
-            _properties[prop_name] = {
-                    "type": prop_schema.type,
-                    "description": prop_schema.description
-                }
+        _properties = {
+            prop_name: self._native_property(prop_schema)
+            for prop_name, prop_schema in input_schema.properties.items()
+        }
 
         return {
             "type": input_schema.type,
@@ -113,11 +139,26 @@ class OpenAIAdapter(Adapter):
             _native_tools_list.append({**extra_fields, **_native_tool_schema})
         return _native_tools_list
 
+    def _is_content_parts(self, result) -> bool:
+        return isinstance(result, list) and all(
+            isinstance(part, dict) and "type" in part for part in result
+        )
+
     def map_tool_result(self, item: FunctionToolResultProtocol):
+        # OpenAI has no error flag on function_call_output, so errors are marked in the output itself
+        if item.is_error:
+            output = json.dumps({"error": item.result}, default=str)
+
+        elif isinstance(item.result, str) or self._is_content_parts(item.result):
+            output = item.result
+
+        else:
+            output = json.dumps(item.result, default=str)
+
         return {
             "type": "function_call_output",
             "call_id": item.call_id,
-            "output": item.result
+            "output": output
         }
 
         
@@ -177,14 +218,32 @@ class OpenAIAdapter(Adapter):
 
             case "response.completed":
                 yield ResponseCompletedEvent(
-                    response=OpenAIResponse(
-                        id=event.response.id,
-                        model=event.response.model,
-                        status=event.response.status,
-                        output=self._normalize_output(event.response.output),
-                        error=ResponseError(message=event.response.error.message) if event.response.error else None,
-                        raw_response=event.response
-                        ),
+                    response=self._normalize_response(event.response),
+                    raw_event=event
+                )
+
+            case "response.failed":
+                response = self._normalize_response(event.response)
+                error = response.error or ResponseError(message="Response failed")
+                yield ResponseFailedEvent(
+                    message=error.message,
+                    error=error,
+                    response=response,
+                    raw_event=event
+                )
+
+            case "error":
+                yield ResponseFailedEvent(
+                    message=event.message,
+                    error=ResponseError(message=event.message, code=event.code),
+                    raw_event=event
+                )
+
+            case "response.output_item.added" if event.item.type == "function_call":
+                yield ToolCallStartedEvent(
+                    call_id=event.item.call_id,
+                    name=event.item.name,
+                    output_index=event.output_index,
                     raw_event=event
                 )
 
@@ -239,6 +298,17 @@ class OpenAIAdapter(Adapter):
                 )
 
 
+    def _normalize_response(self, raw_response) -> OpenAIResponse:
+        return OpenAIResponse(
+            id=raw_response.id,
+            model=raw_response.model,
+            status=raw_response.status,
+            provider=self._provider,
+            output=self._normalize_output(raw_response.output),
+            error=ResponseError(message=raw_response.error.message, code=raw_response.error.code) if raw_response.error else None,
+            raw_response=raw_response
+        )
+
     def _build_request_kwargs(self, request: Request):
         canonical_params = {
             "model": request.model,
@@ -267,16 +337,7 @@ class OpenAIAdapter(Adapter):
 
         _raw_response = self._client.responses.create(**kwargs, stream=False)
 
-        response = OpenAIResponse(
-            id=_raw_response.id,
-            status=_raw_response.status,
-            provider=self._provider,
-            model=request.model,
-            output=self._normalize_output(_raw_response.output),
-            raw_response=_raw_response
-        )
-
-        return cast(OpenAIResponse, response)
+        return self._normalize_response(_raw_response)
 
     def generate_stream(self, request: Request) -> Iterator[StreamEventUnion]:
     
